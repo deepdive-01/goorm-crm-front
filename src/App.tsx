@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import ComponentExample from "./components/ComponentExample";
+import ComponentExample from "./components/Example/ComponentExample";
 
 function App() {
   return (

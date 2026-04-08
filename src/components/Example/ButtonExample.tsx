@@ -1,14 +1,13 @@
 import { VStack } from "@vapor-ui/core";
 import { SaveOutlineIcon } from "@vapor-ui/icons";
-import BaseButton from "./common/BaseButton/BaseButton";
+import BaseButton from "../common/BaseButton/BaseButton";
 
-export default function ComponentExample() {
-  const handleSave = () => {
-    alert("저장되었습니다.");
-  };
+const handleSave = () => {
+  alert("저장되었습니다.");
+};
 
+export default function ButtonExample() {
   return (
-    // 버튼 컴포넌트 예시
     <VStack $css={{ gap: "$100", margin: "$200" }}>
       <h3>버튼 컴포넌트 예시</h3>
       {/* 아이콘 위치를 오른쪽으로 변경하고싶다면 iconPosition="right" 추가 */}
