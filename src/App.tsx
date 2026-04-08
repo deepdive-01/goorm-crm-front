@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import VaporExample from "./VaporExample";
+import ComponentExample from "./components/ComponentExample";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<VaporExample />} />
+      <Route path="/" element={<ComponentExample />} />
     </Routes>
   );
 }
