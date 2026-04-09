@@ -15,8 +15,9 @@ module.exports = {
 
         body1: ["18px", { lineHeight: "26px", fontWeight: "500" }],
         body2: ["16px", { lineHeight: "24px", fontWeight: "500" }],
-        body3: ["14px", { lineHeight: "20px", fontWeight: "500" }],
-        body4: ["12px", { lineHeight: "16px", fontWeight: "500" }],
+        body3: ["14px", { lineHeight: "20px", fontWeight: "600" }],
+        body4: ["14px", { lineHeight: "20px", fontWeight: "500" }],
+        body5: ["12px", { lineHeight: "16px", fontWeight: "500" }],
       },
 
       fontFamily: {
@@ -32,8 +33,9 @@ module.exports = {
         gray: {
           50: "#f7f7f7",
           90: "#E1E1E1",
-          100: "#e1e1e1",
+          100: "#D6D6D6",
           300: "#7B7B7B",
+          400: "#262626",
         },
         semantic: {
           blueSoft: "#EBF4FF",
