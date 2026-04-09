@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import InputExample from "./components/Example/InputExample";
+import ComponentExample from "./components/Example/ComponentExample";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<InputExample />} />
+      <Route path="/" element={<ComponentExample />} />
     </Routes>
   );
 }
