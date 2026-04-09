@@ -1,7 +1,6 @@
-import { VStack } from "@vapor-ui/core";
+import { VStack, Button } from "@vapor-ui/core";
 import { useState } from "react";
 import BaseInput from "../common/BaseInput/BaseInput";
-import BaseButton from "../common/BaseButton/BaseButton";
 import { SearchOutlineIcon } from "@vapor-ui/icons";
 
 export default function InputExample() {
@@ -51,13 +50,13 @@ export default function InputExample() {
         placeholder="검색어를 입력하세요"
         type="search"
         suffix={
-          <BaseButton
-            label="검색"
-            icon={<SearchOutlineIcon />}
-            iconPosition="left"
+          <Button
             variant="fill"
             className="bg-primary-500 text-white px-3 text-body3 rounded-md"
-          />
+          >
+            <SearchOutlineIcon />
+            검색
+          </Button>
         }
         className="px-3"
       />
