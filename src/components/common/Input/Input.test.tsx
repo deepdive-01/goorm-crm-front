@@ -51,17 +51,29 @@ describe("Input", () => {
     });
   });
 
-  describe("required-field", () => {
-    it("name이 required-field이면 * 표시가 렌더링된다", () => {
+  describe("showRequiredMark", () => {
+    it("showRequiredMark가 true이면 * 표시가 렌더링된다", () => {
       render(
-        <Input label="이름" name="required-field" validationMode="onChange" />,
+        <Input
+          label="이름"
+          name="required-field"
+          showRequiredMark
+          validationMode="onChange"
+        />,
       );
       expect(screen.getByText("*")).toBeInTheDocument();
     });
 
-    it("name이 required-field가 아니면 * 표시가 없다", () => {
-      render(<Input label="이름" validationMode="onChange" />);
+    it("showRequiredMark가 없으면 * 표시가 없다", () => {
+      render(
+        <Input label="이름" name="required-field" validationMode="onChange" />,
+      );
       expect(screen.queryByText("*")).not.toBeInTheDocument();
+    });
+
+    it("name이 required-field가 아니어도 showRequiredMark가 true이면 * 표시가 렌더링된다", () => {
+      render(<Input label="이름" showRequiredMark validationMode="onChange" />);
+      expect(screen.getByText("*")).toBeInTheDocument();
     });
   });
 

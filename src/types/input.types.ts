@@ -1,8 +1,10 @@
 export interface InputProps {
+  id?: string;
   label?: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
   type?: "text" | "email" | "password" | "url" | "tel" | "search";
   name?: "required-field" | "optional-field";
+  showRequiredMark?: boolean;
   validationMode: "onChange" | "onBlur" | "onSubmit";
   match?:
     | boolean
@@ -30,4 +32,6 @@ export interface InputProps {
   inputClassName?: string;
   descriptionClassName?: string;
   errorClassName?: string;
+  suffix?: React.ReactNode;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

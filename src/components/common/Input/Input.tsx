@@ -2,6 +2,7 @@ import { Field, Text, TextInput } from "@vapor-ui/core";
 import type { InputProps } from "../../../types/input.types";
 
 export default function Input({
+  id,
   label,
   size,
   type,
@@ -22,6 +23,9 @@ export default function Input({
   inputClassName,
   descriptionClassName,
   errorClassName,
+  suffix,
+  showRequiredMark,
+  onChange,
 }: InputProps) {
   const isRequired = name === "required-field";
 
@@ -36,21 +40,26 @@ export default function Input({
       >
         <Text className={`text-body4 text-gray-400 ${textClassName ?? ""}`}>
           {label}
-          {isRequired && <Text foreground="danger-100"> *</Text>}
+          {showRequiredMark && <Text className="text-semantic-red"> *</Text>}
         </Text>
-        <TextInput
-          size={size}
-          type={type}
-          value={value}
-          defaultValue={defaultValue}
-          required={isRequired}
-          placeholder={placeholder}
-          className={`px-3 placeholder:text-gray-400 text-body4 ${readonly ? "text-gray-300" : "text-black"} ${inputClassName ?? ""}`}
-          readOnly={readonly}
-          disabled={disabled}
-          invalid={invalid}
-          pattern={pattern}
-        />
+        <div className="flex items-center w-full">
+          <TextInput
+            id={id}
+            size={size}
+            type={type}
+            value={value}
+            defaultValue={defaultValue}
+            required={isRequired}
+            placeholder={placeholder}
+            className={`px-3 placeholder:text-gray-400 text-body4 ${readonly ? "text-gray-300" : "text-black"} ${suffix ? "flex-1" : "w-full"} ${inputClassName ?? ""}`}
+            readOnly={readonly}
+            disabled={disabled}
+            invalid={invalid}
+            pattern={pattern}
+            onChange={onChange}
+          />
+          {suffix}
+        </div>
       </Field.Label>
       <Field.Description
         className={`text-body5 text-gray-300 ${descriptionClassName ?? ""}`}
