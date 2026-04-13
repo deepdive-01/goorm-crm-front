@@ -1,12 +1,6 @@
 import { useState } from "react";
-import { Badge, Pagination, Table as VaporTable } from "@vapor-ui/core";
+import { Pagination, Table as VaporTable } from "@vapor-ui/core";
 import type { TableProps } from "../../../types/table.types";
-
-// 상태에 따른 색상 매핑
-const STATUS_COLOR = {
-  active: "success",
-  inactive: "hint",
-} as const;
 
 export default function Table(props: TableProps) {
   // 페이지네이션 설정, 기본 페이지 크기는 10으로 설정
@@ -79,32 +73,27 @@ export default function Table(props: TableProps) {
       currentPage * pageSize,
     );
 
+    // member는 6개의 컬럼을 고정, simple은 3개의 컬럼을 고정
+    // heading을 props로 받아서 렌더링 되도록 수정
     return (
       <div>
         <VaporTable.Root $css={{ width: "100%" }}>
           <VaporTable.Header>
             <VaporTable.Row>
-              <VaporTable.Heading>ID</VaporTable.Heading>
-              <VaporTable.Heading>이름</VaporTable.Heading>
-              <VaporTable.Heading>이메일</VaporTable.Heading>
-              <VaporTable.Heading>등급</VaporTable.Heading>
-              <VaporTable.Heading>상태</VaporTable.Heading>
-              <VaporTable.Heading>가입일</VaporTable.Heading>
+              {props.headings.map((heading) => (
+                <VaporTable.Heading key={heading}>{heading}</VaporTable.Heading>
+              ))}
             </VaporTable.Row>
           </VaporTable.Header>
           <VaporTable.Body>
             {sliced.map((row, i) => (
               <VaporTable.Row key={i}>
-                <VaporTable.Cell>{row.id}</VaporTable.Cell>
-                <VaporTable.Cell>{row.name}</VaporTable.Cell>
-                <VaporTable.Cell>{row.email}</VaporTable.Cell>
-                <VaporTable.Cell>{row.grade}</VaporTable.Cell>
-                <VaporTable.Cell>
-                  <Badge colorPalette={STATUS_COLOR[row.status]} shape="pill">
-                    {row.status === "active" ? "활성" : "비활성"}
-                  </Badge>
-                </VaporTable.Cell>
-                <VaporTable.Cell>{row.joinDate}</VaporTable.Cell>
+                <VaporTable.Cell>{row.row_1}</VaporTable.Cell>
+                <VaporTable.Cell>{row.row_2}</VaporTable.Cell>
+                <VaporTable.Cell>{row.row_3}</VaporTable.Cell>
+                <VaporTable.Cell>{row.row_4}</VaporTable.Cell>
+                <VaporTable.Cell>{row.row_5}</VaporTable.Cell>
+                <VaporTable.Cell>{row.row_6}</VaporTable.Cell>
               </VaporTable.Row>
             ))}
           </VaporTable.Body>
@@ -114,7 +103,7 @@ export default function Table(props: TableProps) {
     );
   }
 
-  // simple variant는 ID, 이름, 이메일만 렌더링
+  // simple variant
   const sliced = props.data.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
@@ -125,17 +114,17 @@ export default function Table(props: TableProps) {
       <VaporTable.Root $css={{ width: "100%" }}>
         <VaporTable.Header>
           <VaporTable.Row>
-            <VaporTable.Heading>ID</VaporTable.Heading>
-            <VaporTable.Heading>이름</VaporTable.Heading>
-            <VaporTable.Heading>이메일</VaporTable.Heading>
+            {props.headings.map((heading) => (
+              <VaporTable.Heading key={heading}>{heading}</VaporTable.Heading>
+            ))}
           </VaporTable.Row>
         </VaporTable.Header>
         <VaporTable.Body>
           {sliced.map((row, i) => (
             <VaporTable.Row key={i}>
-              <VaporTable.Cell>{row.id}</VaporTable.Cell>
-              <VaporTable.Cell>{row.name}</VaporTable.Cell>
-              <VaporTable.Cell>{row.email}</VaporTable.Cell>
+              <VaporTable.Cell>{row.row_1}</VaporTable.Cell>
+              <VaporTable.Cell>{row.row_2}</VaporTable.Cell>
+              <VaporTable.Cell>{row.row_3}</VaporTable.Cell>
             </VaporTable.Row>
           ))}
         </VaporTable.Body>

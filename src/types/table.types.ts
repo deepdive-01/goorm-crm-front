@@ -1,16 +1,16 @@
 export type MemberRow = {
-  id: number;
-  name: string;
-  email: string;
-  grade: string;
-  status: "active" | "inactive";
-  joinDate: string;
+  row_1: string | number;
+  row_2: string | number;
+  row_3: string | number;
+  row_4: string | number;
+  row_5: string | number;
+  row_6: string | number;
 };
 
 export type SimpleUserRow = {
-  id: number;
-  name: string;
-  email: string;
+  row_1: string | number;
+  row_2: string | number;
+  row_3: string | number;
 };
 
 type PaginationConfig = {
@@ -19,5 +19,13 @@ type PaginationConfig = {
 };
 
 export type TableProps =
-  | ({ variant: "member"; data: MemberRow[] } & PaginationConfig)
-  | ({ variant: "simple"; data: SimpleUserRow[] } & PaginationConfig);
+  | ({
+      variant: "member";
+      data: MemberRow[];
+      headings: [string, string, string, string, string, string];
+    } & PaginationConfig)
+  | ({
+      variant: "simple";
+      data: SimpleUserRow[];
+      headings: [string, string, string];
+    } & PaginationConfig);

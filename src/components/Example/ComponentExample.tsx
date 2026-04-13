@@ -10,24 +10,15 @@ export default function ComponentExample() {
       <TitleExample />
       <Table
         variant="member"
+        headings={["ID", "이름", "이메일", "등급", "상태", "가입일"]}
         data={[
           {
-            id: 1,
-            name: "John Doe",
-            email: "john@example.com",
-            grade: "VIP",
-            status: "active",
-            joinDate: "2023-01-01",
-          },
-        ]}
-      />
-      <Table
-        variant="simple"
-        data={[
-          {
-            id: 1,
-            name: "John Doe",
-            email: "john@example.com",
+            row_1: "01",
+            row_2: "John Doe",
+            row_3: "john@example.com",
+            row_4: "VIP",
+            row_5: "active",
+            row_6: "2023-01-01",
           },
         ]}
       />
