@@ -36,4 +36,19 @@ export const signupHandlers = [
       });
     },
   ),
+
+  http.post(`${BASE_URL}/api/v1/auth/register`, async ({ request }) => {
+    const body = (await request.json()) as {
+      verification_token: string;
+    };
+
+    if (!body.verification_token) {
+      return HttpResponse.json(
+        { code: "INVALID_TOKEN", message: "유효하지 않은 인증 토큰입니다." },
+        { status: 403 },
+      );
+    }
+
+    return HttpResponse.json({ code: "REGISTER_SUCCESS" }, { status: 201 });
+  }),
 ];
