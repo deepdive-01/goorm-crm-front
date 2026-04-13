@@ -42,8 +42,12 @@ export default function Input({
     return initial;
   });
 
+  const [telError, setTelError] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (type === "tel") {
+      const hasNonDigit = /\D/.test(e.target.value.replace(/-/g, ""));
+      setTelError(hasNonDigit);
       const formatted = formatTel(e.target.value);
       setInternalValue(formatted);
       onChange?.({ ...e, target: { ...e.target, value: formatted } });
@@ -66,9 +70,18 @@ export default function Input({
         $css={{ gap: "$100", flexDirection: "column" }}
         className={labelClassName}
       >
-        <Text className={`text-body4 text-gray-400 ${textClassName ?? ""}`}>
-          {label}
-          {showRequiredMark && <Text className="text-semantic-red"> *</Text>}
+        <Text
+          className={`flex w-full justify-between items-center text-body4 text-gray-400 ${textClassName ?? ""}`}
+        >
+          <div className="flex items-center gap-1">
+            {label}
+            {showRequiredMark && <Text className="text-semantic-red"> *</Text>}
+          </div>
+          {telError && (
+            <p className="flex text-body5 text-semantic-red">
+              숫자만 입력 가능합니다
+            </p>
+          )}
         </Text>
         <div className="flex items-center w-full">
           <TextInput
