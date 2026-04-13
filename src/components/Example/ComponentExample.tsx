@@ -3,6 +3,7 @@ import InputExample from "./InputExample";
 import TitleExample from "./TitleExample";
 import Table from "../admin/Table/Table";
 import DashBoard from "./DashBoardExample";
+import SideBar from "../admin/SideBar/SideBar";
 
 export default function ComponentExample() {
   return (
@@ -24,6 +25,7 @@ export default function ComponentExample() {
         ]}
       />
       <DashBoard />
+      <SideBar />
     </HStack>
   );
 }
