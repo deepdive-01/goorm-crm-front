@@ -1,6 +1,14 @@
 import type { DashBoardProps } from "../../../types/dashBoard.types";
 
 // 대시보드 컴포넌트
+
+const colorMap = {
+  blue: { bg: "bg-semantic-blueSoft", text: "text-primary-500" },
+  green: { bg: "bg-semantic-greenSoft", text: "text-semantic-green" },
+  purple: { bg: "bg-semantic-purpleSoft", text: "text-semantic-purple" },
+  orange: { bg: "bg-semantic-yellowSoft", text: "text-semantic-orange" },
+};
+
 export default function DashBoard({
   dashBoardImage,
   mainTitle,
@@ -13,14 +21,17 @@ export default function DashBoard({
   thirdTitle,
   thirdValue,
   routeButton,
+  color,
 }: DashBoardProps) {
+  const { bg, text } = colorMap[color || "blue"];
+
   return (
     <>
       <div className="flex flex-col gap-9 border-2 rounded-md p-[36px] max-w-[548px] max-h-[408px]">
         <div className="flex gap-[10px] items-center">
           {/* 상단 이미지와 제목 */}
           <img
-            className="w-[44px] h-[44px] bg-semantic-blueSoft p-[10px] rounded-[12px]"
+            className={`w-[44px] h-[44px] ${bg} p-[10px] rounded-[12px]`}
             src={dashBoardImage}
             alt="Dashboard"
           />
@@ -47,7 +58,7 @@ export default function DashBoard({
             <span className="text-black">{thirdValue}</span>
           </div>
         </div>
-        <div className="text-body2 text-primary-500">
+        <div className={`text-body2 ${text}`}>
           <button>{routeButton}</button>
         </div>
       </div>

@@ -4,7 +4,7 @@ export default function DashBoardExample() {
   return (
     <>
       <DashBoard
-        dashBoardImage="/admin/DashBoard/MemberManagement.svg"
+        dashBoardImage="/admin/DashBoard/Rank.svg"
         mainTitle="Main Title"
         mainValue="0"
         mainValueVariant="명"
@@ -15,6 +15,7 @@ export default function DashBoardExample() {
         thirdTitle="Third Title"
         thirdValue="0"
         routeButton="Route Button"
+        color="orange"
       />
     </>
   );

@@ -1,8 +1,8 @@
 type DashBoardVariant = "명" | "건" | "개";
+type DashBoardColor = "blue" | "green" | "purple" | "orange";
 
 export interface DashBoardProps {
   dashBoardImage: string;
-  color?: string;
   mainTitle: string;
   mainValue: string | number;
   mainValueVariant: DashBoardVariant;
@@ -13,4 +13,5 @@ export interface DashBoardProps {
   thirdTitle: string;
   thirdValue: string | number;
   routeButton: string;
+  color?: DashBoardColor;
 }
