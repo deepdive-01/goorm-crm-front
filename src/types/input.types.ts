@@ -2,7 +2,7 @@ export interface InputProps {
   id?: string;
   label?: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
-  type?: "text" | "email" | "password" | "url" | "tel" | "search";
+  type?: "text" | "email" | "password" | "url" | "tel" | "search" | "number";
   name?: "required-field" | "optional-field";
   showRequiredMark?: boolean;
   validationMode: "onChange" | "onBlur" | "onSubmit";
