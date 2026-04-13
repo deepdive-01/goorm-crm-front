@@ -1,20 +1,4 @@
-type DashBoardVariant = "명" | "건" | "개";
-
-// 대시보드 타입 정의
-type DashBoardProps = {
-  dashBoardImage: string;
-  color?: string;
-  mainTitle: string;
-  mainValue: string | number;
-  mainValueVariant: DashBoardVariant;
-  firstTitle: string;
-  firstValue: string | number;
-  secondTitle: string;
-  secondValue: string | number;
-  thirdTitle: string;
-  thirdValue: string | number;
-  routeButton: string;
-};
+import type { DashBoardProps } from "../../../types/dashBoard.types";
 
 // 대시보드 컴포넌트
 export default function DashBoard({
