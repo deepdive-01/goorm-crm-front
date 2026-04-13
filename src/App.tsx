@@ -7,6 +7,7 @@ function App() {
     <Routes>
       <Route path="/" element={<ComponentExample />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<div>로그인 페이지 (미구현)</div>} />
     </Routes>
   );
 }

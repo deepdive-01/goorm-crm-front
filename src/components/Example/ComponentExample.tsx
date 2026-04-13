@@ -6,7 +6,7 @@ import DashBoard from "./DashBoardExample";
 
 export default function ComponentExample() {
   return (
-    <HStack>
+    <HStack $css={{ flexWrap: "wrap", margin: "$300", gap: "$300" }}>
       <InputExample />
       <TitleExample />
       <Table

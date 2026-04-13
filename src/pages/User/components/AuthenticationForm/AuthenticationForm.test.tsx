@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -6,7 +6,7 @@ import AuthenticationForm from "./AuthenticationForm";
 
 const defaultProps = {
   onSendCode: vi.fn().mockResolvedValue(undefined),
-  onSubmit: vi.fn().mockResolvedValue(undefined),
+  onSubmit: vi.fn().mockResolvedValue("mock-token"),
   submitLabel: "인증 완료",
 };
 
@@ -107,6 +107,21 @@ describe("AuthenticationForm", () => {
       await user.click(screen.getByRole("button", { name: "인증번호 받기" }));
       expect(onSendCode).toHaveBeenCalledWith("goorm01@goorm.com");
     });
+
+    it("onSendCode 실패 시 에러 메시지가 표시된다", async () => {
+      const onSendCode = vi.fn().mockRejectedValue({
+        response: { data: { message: "이미 사용 중인 이메일입니다." } },
+      });
+      const user = userEvent.setup();
+      render(<AuthenticationForm {...defaultProps} onSendCode={onSendCode} />);
+      await user.type(screen.getByLabelText(/이메일/), "goorm01@goorm.com");
+      await user.click(screen.getByRole("button", { name: "인증번호 받기" }));
+      await waitFor(() => {
+        expect(
+          screen.getByText("이미 사용 중인 이메일입니다."),
+        ).toBeInTheDocument();
+      });
+    });
   });
 
   describe("인증 완료 버튼 활성화", () => {
@@ -122,11 +137,12 @@ describe("AuthenticationForm", () => {
       expect(screen.getByRole("button", { name: "인증 완료" })).toBeDisabled();
     });
 
-    it("6자리 초과 입력 시 비활성화 상태다", async () => {
+    it("maxLength로 인해 6자리를 초과하여 입력할 수 없다", async () => {
       const user = userEvent.setup();
       render(<AuthenticationForm {...defaultProps} showEndBtn />);
-      await user.type(screen.getByLabelText(/인증번호/), "1234567");
-      expect(screen.getByRole("button", { name: "인증 완료" })).toBeDisabled();
+      const codeInput = screen.getByLabelText(/인증번호/);
+      await user.type(codeInput, "1234567");
+      expect(codeInput).toHaveValue("123456");
     });
 
     it("정확히 6자리 입력 시 활성화된다", async () => {
@@ -150,6 +166,35 @@ describe("AuthenticationForm", () => {
       render(<AuthenticationForm {...defaultProps} showEndBtn />);
       await user.type(screen.getByLabelText(/인증번호/), "      ");
       expect(screen.getByRole("button", { name: "인증 완료" })).toBeDisabled();
+    });
+
+    it("인증 성공 후 버튼 텍스트가 '인증 완료됨'으로 바뀌고 비활성화된다", async () => {
+      const user = userEvent.setup();
+      render(<AuthenticationForm {...defaultProps} showEndBtn />);
+      await user.type(screen.getByLabelText(/인증번호/), "123456");
+      await user.click(screen.getByRole("button", { name: "인증 완료" }));
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "인증 완료됨" }),
+        ).toBeDisabled();
+      });
+    });
+
+    it("인증 실패 시 에러 메시지가 표시된다", async () => {
+      const onSubmit = vi.fn().mockRejectedValue({
+        response: { data: { message: "인증번호가 올바르지 않습니다." } },
+      });
+      const user = userEvent.setup();
+      render(
+        <AuthenticationForm {...defaultProps} onSubmit={onSubmit} showEndBtn />,
+      );
+      await user.type(screen.getByLabelText(/인증번호/), "000000");
+      await user.click(screen.getByRole("button", { name: "인증 완료" }));
+      await waitFor(() => {
+        expect(
+          screen.getByText("인증번호가 올바르지 않습니다."),
+        ).toBeInTheDocument();
+      });
     });
   });
 
