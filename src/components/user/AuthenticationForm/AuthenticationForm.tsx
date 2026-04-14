@@ -5,9 +5,10 @@ import { useAuthenticationForm } from "../../../hooks/useAuthenticationForm";
 
 type AuthenticationFormProps = {
   onSendCode: (email: string) => Promise<void>;
-  onSubmit: (email: string, code: string) => Promise<string>;
+  onSubmit?: (email: string, code: string) => Promise<string>;
+  onCodeChange?: (code: string) => void;
   size?: "sm" | "md" | "lg" | "xl";
-  submitLabel: string;
+  submitLabel?: string;
   showEndBtn?: boolean;
   children?: React.ReactNode;
   className?: string;
@@ -16,6 +17,7 @@ type AuthenticationFormProps = {
 export default function AuthenticationForm({
   onSendCode,
   onSubmit,
+  onCodeChange,
   size,
   submitLabel,
   showEndBtn,
@@ -98,7 +100,10 @@ export default function AuthenticationForm({
           placeholder=""
           autoComplete="one-time-code"
           maxLength={6}
-          onChange={handleCodeChange}
+          onChange={(e) => {
+            handleCodeChange(e);
+            onCodeChange?.(e.target.value);
+          }}
           onBlur={handleCodeBlur}
           className="w-full px-3 text-body4"
         />
