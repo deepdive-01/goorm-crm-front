@@ -2,14 +2,16 @@ import { HStack } from "@vapor-ui/core";
 import InputExample from "./InputExample";
 import TitleExample from "./TitleExample";
 import Table from "../admin/Table/Table";
-import DashBoard from "./DashBoardExample";
+import DashBoardExample from "./DashBoardExample";
 import SideBar from "../admin/SideBar/SideBar";
+import EditExample from "../example/EditExample";
 
 export default function ComponentExample() {
   return (
     <HStack $css={{ flexWrap: "wrap", margin: "$300", gap: "$300" }}>
       <InputExample />
       <TitleExample />
+      <EditExample />
       <Table
         variant="member"
         headings={["ID", "이름", "이메일", "등급", "상태", "가입일"]}
@@ -24,7 +26,7 @@ export default function ComponentExample() {
           },
         ]}
       />
-      <DashBoard />
+      <DashBoardExample />
       <SideBar userName="관리자A" roleName="관리자" roleLabel="관리자A" />
     </HStack>
   );

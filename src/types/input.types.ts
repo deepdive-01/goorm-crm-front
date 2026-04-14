@@ -5,7 +5,7 @@ export interface InputProps {
   type?: "text" | "email" | "password" | "url" | "tel" | "search" | "number";
   name?: "required-field" | "optional-field";
   showRequiredMark?: boolean;
-  validationMode: "onChange" | "onBlur" | "onSubmit";
+  validationMode?: "onChange" | "onBlur" | "onSubmit";
   match?:
     | boolean
     | "badInput"
