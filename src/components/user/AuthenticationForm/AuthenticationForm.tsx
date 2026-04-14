@@ -1,7 +1,7 @@
 import { Button, VStack } from "@vapor-ui/core";
 import { TextInput } from "@vapor-ui/core";
 
-import { useAuthenticationForm } from "../../../../hooks/useAuthenticationForm";
+import { useAuthenticationForm } from "../../../hooks/useAuthenticationForm";
 
 type AuthenticationFormProps = {
   onSendCode: (email: string) => Promise<void>;

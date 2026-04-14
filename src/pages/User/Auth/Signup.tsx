@@ -1,7 +1,7 @@
 import { Button, Callout, VStack, Text } from "@vapor-ui/core";
 
 import { useSignup } from "../../../hooks/useSignup";
-import AuthenticationForm from "../components/AuthenticationForm/AuthenticationForm";
+import AuthenticationForm from "../../../components/user/AuthenticationForm/AuthenticationForm";
 import Input from "../../../components/common/Input/Input";
 
 export default function SignupForm() {
