@@ -85,7 +85,7 @@ export default function Login() {
           <Button
             type="button"
             className="w-full justify-end h-fit text-body5 hover:before:!opacity-0"
-            onClick={() => navigate("/reset-password")}
+            onClick={() => navigate("/resetPassword")}
           >
             비밀번호 재설정
           </Button>
