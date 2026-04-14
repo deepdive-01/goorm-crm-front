@@ -16,7 +16,7 @@ export default function SideBarItem({
       onClick={onClick}
       className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-lg transition-colors duration-150 text-body4 ${
         isActive
-          ? "bg-primary-500 font-semibold"
+          ? "bg-gray-50 font-semibold"
           : " hover:bg-gray-50 hover:text-gray-400"
       }`}
     >
