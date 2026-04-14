@@ -27,7 +27,7 @@ export default function DashBoard({
 
   return (
     <>
-      <div className="flex flex-col gap-9 border-2 rounded-md p-[36px] max-w-[548px] max-h-[408px]">
+      <div className="flex flex-col gap-4 border-2 rounded-md p-[36px] max-w-[460px]">
         <div className="flex gap-[10px] items-center">
           {/* 상단 이미지와 제목 */}
           <img
@@ -45,15 +45,15 @@ export default function DashBoard({
 
         {/* 하단 내용 부분 */}
         <div className="flex flex-col gap-6">
-          <div className="flex justify-between min-w-[125px] w-[336px] text-body2 text-gray-500">
+          <div className="flex justify-between w-full text-body2 text-gray-500">
             {firstTitle}
             <span className="text-black">{firstValue}</span>
           </div>
-          <div className="flex justify-between min-w-[125px] w-[336px] text-body2 text-gray-500">
+          <div className="flex justify-between w-full text-body2 text-gray-500">
             {secondTitle}
             <span className="text-black">{secondValue}</span>
           </div>
-          <div className="flex justify-between min-w-[125px] w-[336px] text-body2 text-gray-500">
+          <div className="flex justify-between w-full text-body2 text-gray-500">
             {thirdTitle}
             <span className="text-black">{thirdValue}</span>
           </div>
