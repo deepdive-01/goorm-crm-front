@@ -10,9 +10,11 @@ import type {
 
 // 카드 생성 함수
 function buildCards(stats: DashboardStats): DashBoardProps[] {
+  // API 응답에서 필요한 데이터 추출
   const { member_list, member_management, admin_management, grade_management } =
     stats;
 
+  // 최근 활동 날짜를 한국어 형식으로 변환
   const lastActive = new Date(
     admin_management.last_active_at,
   ).toLocaleDateString("ko-KR");
@@ -88,8 +90,12 @@ export default function DashBoardPage() {
 
   // 컴포넌트 마운트 시 관리자 정보와 대시보드 통계 데이터를 API에서 가져옴
   useEffect(() => {
-    fetchAdminMe().then(setUser);
-    fetchDashboardStats().then(setStats);
+    fetchAdminMe()
+      .then(setUser)
+      .catch(() => {});
+    fetchDashboardStats()
+      .then(setStats)
+      .catch(() => {});
   }, [setUser, setStats]); // setUser와 setStats가 변경 될 때마다 다시 실행
 
   const cards = stats ? buildCards(stats) : []; // stats가 존재할 때 카드 데이터 생성, 없으면 빈 배열
