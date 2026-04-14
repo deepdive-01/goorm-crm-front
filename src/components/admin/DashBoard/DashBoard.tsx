@@ -1,4 +1,5 @@
 import type { DashBoardProps } from "../../../types/dashBoard.types";
+import { useNavigate } from "react-router-dom";
 
 // 대시보드 컴포넌트
 
@@ -22,8 +23,10 @@ export default function DashBoard({
   thirdValue,
   routeButton,
   color,
+  route,
 }: DashBoardProps) {
   const { bg, text } = colorMap[color || "blue"];
+  const navigate = useNavigate();
 
   return (
     <>
@@ -59,7 +62,7 @@ export default function DashBoard({
           </div>
         </div>
         <div className={`text-body2 ${text}`}>
-          <button>{routeButton}</button>
+          <button onClick={() => navigate(`${route}`)}>{routeButton}</button>
         </div>
       </div>
     </>

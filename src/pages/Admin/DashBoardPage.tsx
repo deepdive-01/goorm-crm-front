@@ -31,6 +31,7 @@ function buildCards(stats: DashboardStats): DashBoardProps[] {
       thirdTitle: "휴면 회원",
       thirdValue: member_list.dormant_count,
       routeButton: "상세보기 →",
+      route: "/admin/members",
     },
     {
       dashBoardImage: "/admin/DashBoard/MemberManagement.svg",
@@ -45,6 +46,7 @@ function buildCards(stats: DashboardStats): DashBoardProps[] {
       thirdTitle: "탈퇴 요청",
       thirdValue: member_management.withdrawal_requested,
       routeButton: "상세보기 →",
+      route: "/admin/management",
     },
     {
       dashBoardImage: "/admin/DashBoard/Admin.svg",
@@ -59,6 +61,7 @@ function buildCards(stats: DashboardStats): DashBoardProps[] {
       thirdTitle: "최근 활동",
       thirdValue: lastActive,
       routeButton: "상세보기 →",
+      route: "/admin/admins",
     },
     {
       dashBoardImage: "/admin/DashBoard/Rank.svg",
@@ -73,6 +76,7 @@ function buildCards(stats: DashboardStats): DashBoardProps[] {
       thirdTitle: "최근 등급 상승",
       thirdValue: grade_management.recent_grade_upgraded,
       routeButton: "상세보기 →",
+      route: "/admin/grades",
     },
   ];
 }
