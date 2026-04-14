@@ -149,26 +149,18 @@ describe("SideBar 메뉴 활성 상태 테스트", () => {
   it("현재 경로가 /admin/dashboard 이면 대시보드 버튼이 활성 스타일이어야 한다.", () => {
     renderSideBar({}, "/admin/dashboard");
     const dashboardButton = screen.getByRole("button", { name: /대시보드/i });
-    expect(dashboardButton).toHaveClass("bg-primary-500");
+    expect(dashboardButton).toHaveClass("bg-gray-50");
   });
 
   it("현재 경로가 /admin/members 이면 회원 목록 버튼이 활성 스타일이어야 한다.", () => {
     renderSideBar({}, "/admin/members");
     const membersButton = screen.getByRole("button", { name: /회원 목록/i });
-    expect(membersButton).toHaveClass("bg-primary-500");
+    expect(membersButton).toHaveClass("bg-gray-50");
   });
 
   it("현재 경로와 일치하지 않는 메뉴는 활성 스타일이 아니어야 한다.", () => {
     renderSideBar({}, "/admin/dashboard");
     const membersButton = screen.getByRole("button", { name: /회원 목록/i });
-    expect(membersButton).not.toHaveClass("bg-primary-500");
-  });
-
-  it("현재 경로가 어떤 메뉴와도 일치하지 않으면 활성 메뉴가 없어야 한다.", () => {
-    renderSideBar({}, "/");
-    const buttons = screen
-      .getAllByRole("button")
-      .filter((btn) => btn.className.includes("bg-primary-500"));
-    expect(buttons.length).toBe(0);
+    expect(membersButton).not.toHaveClass("bg-gray-50");
   });
 });

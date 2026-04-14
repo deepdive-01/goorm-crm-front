@@ -1,4 +1,5 @@
 import type { DashBoardProps } from "../../../types/dashBoard.types";
+import { useNavigate } from "react-router-dom";
 
 // 대시보드 컴포넌트
 
@@ -22,12 +23,14 @@ export default function DashBoard({
   thirdValue,
   routeButton,
   color,
+  route,
 }: DashBoardProps) {
   const { bg, text } = colorMap[color || "blue"];
+  const navigate = useNavigate();
 
   return (
     <>
-      <div className="flex flex-col gap-9 border-2 rounded-md p-[36px] max-w-[548px] max-h-[408px]">
+      <div className="flex flex-col gap-4 border-2 rounded-lg p-[36px] w-[440px]">
         <div className="flex gap-[10px] items-center">
           {/* 상단 이미지와 제목 */}
           <img
@@ -45,21 +48,21 @@ export default function DashBoard({
 
         {/* 하단 내용 부분 */}
         <div className="flex flex-col gap-6">
-          <div className="flex justify-between min-w-[125px] w-[336px] text-body2 text-gray-500">
+          <div className="flex justify-between w-full text-body2 text-gray-500">
             {firstTitle}
             <span className="text-black">{firstValue}</span>
           </div>
-          <div className="flex justify-between min-w-[125px] w-[336px] text-body2 text-gray-500">
+          <div className="flex justify-between w-full text-body2 text-gray-500">
             {secondTitle}
             <span className="text-black">{secondValue}</span>
           </div>
-          <div className="flex justify-between min-w-[125px] w-[336px] text-body2 text-gray-500">
+          <div className="flex justify-between w-full text-body2 text-gray-500">
             {thirdTitle}
             <span className="text-black">{thirdValue}</span>
           </div>
         </div>
         <div className={`text-body2 ${text}`}>
-          <button>{routeButton}</button>
+          <button onClick={() => navigate(`${route}`)}>{routeButton}</button>
         </div>
       </div>
     </>

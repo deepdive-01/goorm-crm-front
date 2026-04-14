@@ -14,4 +14,5 @@ export interface DashBoardProps {
   thirdValue: string | number;
   routeButton: string;
   color?: DashBoardColor;
+  route: string;
 }
