@@ -1,14 +1,12 @@
-import type { ComponentType } from "react";
-
 interface SideBarItemProps {
-  icon: ComponentType<{ size?: number | string; className?: string }>;
+  icon: string;
   label: string;
   isActive?: boolean;
   onClick?: () => void;
 }
 
 export default function SideBarItem({
-  icon: Icon,
+  icon,
   label,
   isActive = false,
   onClick,
@@ -18,12 +16,12 @@ export default function SideBarItem({
       onClick={onClick}
       className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-lg transition-colors duration-150 text-body4 ${
         isActive
-          ? "bg-primary-500 text-white font-semibold"
-          : "text-gray-300 hover:bg-gray-50 hover:text-gray-400"
+          ? "bg-primary-500 font-semibold"
+          : " hover:bg-gray-50 hover:text-gray-400"
       }`}
     >
-      <Icon size={20} />
-      <span>{label}</span>
+      <img src={icon} alt={label} />
+      <span className="text-black">{label}</span>
     </button>
   );
 }

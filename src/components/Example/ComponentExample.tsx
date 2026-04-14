@@ -25,7 +25,7 @@ export default function ComponentExample() {
         ]}
       />
       <DashBoard />
-      <SideBar />
+      <SideBar userName="관리자A" roleName="관리자" roleLabel="관리자A" />
     </HStack>
   );
 }

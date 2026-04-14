@@ -1,38 +1,70 @@
+import React from "react";
 import {
-  BellOnIcon,
   CaretDownIcon,
   ChevronLeftOutlineIcon,
   ChevronRightOutlineIcon,
-  DashboardIcon,
-  GroupIcon,
-  SettingIcon,
-  StarIcon,
-  UserCheckIcon,
   UserIcon,
 } from "@vapor-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import SideBarItem from "./SideBarItem";
 import { useSidebar } from "./useSidebar";
 
+// 네비게이션 아이템 정의: 경로, 레이블, 아이콘
 const NAV_ITEMS = [
-  { path: "/admin/notifications", label: "알림", icon: BellOnIcon },
-  { path: "/admin/dashboard", label: "대시보드", icon: DashboardIcon },
-  { path: "/admin/members", label: "회원 목록", icon: GroupIcon },
-  { path: "/admin/member-management", label: "회원 관리", icon: UserCheckIcon },
-  { path: "/admin/grade-management", label: "등급 관리", icon: StarIcon },
-  { path: "/admin/admin-management", label: "관리자 관리", icon: SettingIcon },
+  {
+    path: "/admin/notifications",
+    label: "알림",
+    icon: "/admin/SideBar/BellOnOutlineIcon.svg",
+  },
+  {
+    path: "/admin/dashboard",
+    label: "대시보드",
+    icon: "/admin/SideBar/HomeOutlineIcon.svg",
+  },
+  {
+    path: "/admin/members",
+    label: "회원 목록",
+    icon: "/admin/SideBar/GroupOutlineIcon.svg",
+  },
+  {
+    path: "/admin/member-management",
+    label: "회원 관리",
+    icon: "/admin/SideBar/AssignmentOutlineIcon.svg",
+  },
+  {
+    path: "/admin/grade-management",
+    label: "등급 관리",
+    icon: "/admin/SideBar/CertificateOutlineIcon.svg",
+  },
+  {
+    path: "/admin/admin-management",
+    label: "관리자 관리",
+    icon: "/admin/SideBar/BuildOutlineIcon.svg",
+  },
 ] as const;
 
 const SIDEBAR_WIDTH = "w-64"; // 256px
 
-export default function SideBar() {
+interface SideBarProps {
+  userName: string;
+  roleName: string; // 역할 표시명 (예: "관리자")
+  roleLabel?: string; // 칩 우측 레이블 (생략 시 userName으로 표시)
+}
+
+export default function SideBar({
+  userName,
+  roleName,
+  roleLabel,
+}: SideBarProps) {
+  // 사이드바 열림/닫힘 상태 관리 훅
   const { isOpen, open, close } = useSidebar();
   const location = useLocation();
+
+  // 추후 넣을 네비게이션 훅
   const navigate = useNavigate();
 
   return (
     <>
-      {/* push layout 용 스페이서: 문서 흐름에 포함되어 메인 콘텐츠를 우측으로 밀어냄 */}
       <div
         className={`flex-shrink-0 transition-all duration-300 ${isOpen ? SIDEBAR_WIDTH : "w-0"}`}
       />
@@ -43,9 +75,8 @@ export default function SideBar() {
           isOpen ? SIDEBAR_WIDTH : "w-0"
         }`}
       >
-        {/* 내부 콘텐츠는 항상 w-64를 유지 — 슬라이드 아웃 시 부모의 overflow-hidden으로 숨김 */}
         <div className="flex flex-col h-full w-69 gap-3">
-          {/* 헤더: 브랜드명 + 닫기 버튼 */}
+          {/* 헤더 */}
           <div>
             <div className="flex items-center justify-between px-6 py-6">
               <div className="flex items-center gap-2">
@@ -68,45 +99,46 @@ export default function SideBar() {
             </div>
             <div className="px-6 pb-6 flex gap-2">
               <UserIcon size={32} />
-              <p className="text-h2 text-gray-400">관리자A</p>
+              <p className="text-h2 text-gray-400">{userName}</p>
             </div>
           </div>
 
           <hr className="mx-3 border-gray-90" />
 
           {/* 네비게이션 메뉴 */}
-          <nav className="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1">
-            {NAV_ITEMS.map((item) => (
-              <SideBarItem
-                key={item.path}
-                icon={item.icon}
-                label={item.label}
-                isActive={location.pathname === item.path}
-                onClick={() => navigate(item.path)}
-              />
+          {/* NAV_ITEMS를 불러와서 사이드바 아이템에 넣음 */}
+          <nav className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1">
+            {NAV_ITEMS.map((item, index) => (
+              <React.Fragment key={item.path}>
+                <SideBarItem
+                  icon={item.icon}
+                  label={item.label}
+                  isActive={location.pathname === item.path}
+                  onClick={() => navigate(item.path)}
+                />
+                {index === 0 && <hr className="border-gray-90 my-1 mt-3" />}
+              </React.Fragment>
             ))}
           </nav>
 
           {/* 하단 고정 영역 */}
           <div className="px-5 py-5 border-t border-gray-90">
-            {/* 역할 칩 */}
             <div className="flex items-center justify-between mb-4 border border-gray-50 rounded-lg px-8 py-3">
-              <div className="text-body4">관리자</div>
+              <div className="text-body4">{roleName}</div>
               <div className="w-px bg-gray-90 self-stretch" />
-              <div className="text-body4  text-gray-400 ">관리자A</div>
+              <div className="text-body4 text-gray-400">
+                {roleLabel ?? userName}
+              </div>
             </div>
 
             {/* 프로필 + 드롭다운 */}
             <button
-              className="flex items-center gap-3 w-full rounded-lg p-2 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 rounded-lg p-2 hover:bg-gray-50 transition-colors"
               aria-label="프로필 메뉴"
             >
               <div className="w-9 h-9 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
                 <UserIcon size={20} className="text-primary-500" />
               </div>
-              <span className="flex-1 text-body4 text-gray-400 text-left truncate">
-                관리자A
-              </span>
               <CaretDownIcon
                 size={16}
                 className="text-gray-300 flex-shrink-0"
