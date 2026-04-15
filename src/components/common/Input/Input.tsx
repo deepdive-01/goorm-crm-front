@@ -27,6 +27,7 @@ export default function Input({
   textClassName,
   inputClassName,
   descriptionClassName,
+  suffixClassName,
   errorClassName,
   suffix,
   showRequiredMark,
@@ -83,7 +84,7 @@ export default function Input({
             </p>
           )}
         </Text>
-        <div className="flex items-center w-full">
+        <div className={`flex items-center w-full ${suffixClassName ?? ""}`}>
           <TextInput
             id={id}
             size={size}

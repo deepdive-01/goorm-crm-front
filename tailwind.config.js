@@ -12,6 +12,7 @@ module.exports = {
         h2: ["24px", { lineHeight: "32px", fontWeight: "700" }],
         h3: ["22px", { lineHeight: "30px", fontWeight: "600" }],
         h4: ["20px", { lineHeight: "28px", fontWeight: "700" }],
+        h5: ["18px", { lineHeight: "28px", fontWeight: "700" }],
 
         body1: ["18px", { lineHeight: "26px", fontWeight: "500" }],
         body2: ["16px", { lineHeight: "24px", fontWeight: "500" }],

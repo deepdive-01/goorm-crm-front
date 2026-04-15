@@ -6,6 +6,7 @@ import DashBoardExample from "./DashBoardExample";
 import SideBar from "../admin/SideBar/SideBar";
 import EditExample from "../example/EditExample";
 import NavExample from "./NavExample";
+import ShippingAddressExample from "./ShippingAddressExample";
 
 export default function ComponentExample() {
   return (
@@ -15,6 +16,7 @@ export default function ComponentExample() {
         <InputExample />
         <TitleExample />
         <EditExample />
+        <ShippingAddressExample />
         <Table
           variant="member"
           headings={["ID", "이름", "이메일", "등급", "상태", "가입일"]}
