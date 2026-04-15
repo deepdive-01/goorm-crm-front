@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import DashBoard from "../../components/admin/DashBoard/DashBoard";
-import SideBar from "../../components/admin/SideBar/SideBar";
-import { fetchAdminMe, fetchDashboardStats } from "../../services/dashboard";
-import type { DashBoardProps } from "../../types/dashBoard.types";
+import DashBoard from "../../../components/admin/DashBoard/DashBoard";
+import SideBar from "../../../components/admin/SideBar/SideBar";
+import { fetchAdminMe, fetchDashboardStats } from "../../../services/dashboard";
+import type { DashBoardProps } from "../../../types/dashBoard.types";
 import type {
   AdminUser,
   DashboardStats,
-} from "../../types/DashBoardPage.types";
+} from "../../../types/DashBoardPage.types";
 
 // 카드 생성 함수
 function buildCards(stats: DashboardStats): DashBoardProps[] {

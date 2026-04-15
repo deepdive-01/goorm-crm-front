@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { server } from "../../mocks/server";
+import { server } from "../../../mocks/server";
 import DashBoardPage from "./DashBoardPage";
 
 function renderDashBoardPage() {
