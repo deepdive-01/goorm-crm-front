@@ -17,7 +17,7 @@ const NAV_ITEMS = [
     icon: "/admin/SideBar/BellOnOutlineIcon.svg",
   },
   {
-    path: "/admin/dashboard",
+    path: "/admin",
     label: "대시보드",
     icon: "/admin/SideBar/HomeOutlineIcon.svg",
   },

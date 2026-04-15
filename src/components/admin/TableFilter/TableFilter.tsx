@@ -118,7 +118,7 @@ export default function TableFilter({
   return (
     <div className="flex items-center justify-between">
       {/* 좌측: 타이틀 */}
-      <h2 className="text-h2 font-bold">회원 목록</h2>
+      <h2 className="text-body2 font-medium">회원 목록</h2>
 
       {/* 우측: 검색 + 필터 + 추가 버튼 */}
       <div className="flex items-center gap-2">
@@ -136,7 +136,7 @@ export default function TableFilter({
             onValueChange={(value) => setSearchValue(value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="pl-8"
+            className={`text-body4 font-medium ${isFocused ? "pr-5 pl-3" : "pl-8"}`}
           />
         </div>
 

@@ -80,12 +80,20 @@ export default function MemberListPage() {
       />
 
       <main className="flex-1 p-8 flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <span className="text-body5 text-primary-500">회원 목록</span>
+          <h1 className="text-h2 font-bold">회원 목록</h1>
+          <p className="text-body2 font-medium text-gray-300 mb-4">
+            전체 회원 현황을 조회하고 상세 정보를 확인해보세요
+          </p>
+        </div>
+
         <TableFilter
           onSearch={setSearch}
           onFilterChange={handleFilterChange}
           onAdd={handleAdd}
         />
-
+        <span className="border border-gray-50 mb-1"></span>
         <Table variant="member" headings={TABLE_HEADINGS} data={filteredData} />
       </main>
     </div>
