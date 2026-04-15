@@ -12,7 +12,9 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
-      <AdminRoutes />
+      {AdminRoutes.map((route) => (
+        <Route key={route.props.path} {...route.props} />
+      ))}
     </Routes>
   );
 }
