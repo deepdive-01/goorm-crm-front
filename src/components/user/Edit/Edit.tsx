@@ -1,6 +1,6 @@
-import { cloneElement, isValidElement, useState } from "react";
+import { cloneElement, isValidElement, useEffect, useState } from "react";
 
-import { Button, Dialog, Field, HStack } from "@vapor-ui/core";
+import { Button, Dialog, Field, HStack, Text } from "@vapor-ui/core";
 import { CloseOutlineIcon } from "@vapor-ui/icons";
 import { ConfirmOutlineIcon } from "@vapor-ui/icons";
 import { EditIcon } from "@vapor-ui/icons";
@@ -11,6 +11,10 @@ import Input from "../../common/Input/Input";
 interface EditProps extends InputProps {
   onConfirm?: (value: string) => void;
   onCancel?: () => void;
+  // 편집 전 Text로 표시할 값, 편집 중에는 Input의 초기값으로 사용
+  displayValue?: string;
+  // true이면 편집 버튼 없이 Text만 표시
+  noneEdit?: boolean;
   // modal이 있으면 인라인 편집 대신 모달을 열어 처리
   // Dialog.Header + Dialog.Body + Dialog.Footer 형태의 ReactNode을 전달
   // modal 컴포넌트는 onClose?: () => void prop을 받을 수 있음
@@ -38,6 +42,8 @@ export default function Edit({
   onChange,
   onConfirm,
   onCancel,
+  displayValue,
+  noneEdit,
   modal,
 }: EditProps) {
   const iconSize = 22;
@@ -45,6 +51,12 @@ export default function Edit({
   const [internalValue, setInternalValue] = useState(
     value ?? defaultValue ?? "",
   );
+
+  useEffect(() => {
+    if (!isEditing) {
+      setInternalValue(value ?? defaultValue ?? "");
+    }
+  }, [value, defaultValue, isEditing]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInternalValue(e.target.value);
@@ -96,22 +108,28 @@ export default function Edit({
             </Dialog.PortalPrimitive>
           </Dialog.Root>
         ) : !isEditing ? (
-          // modal이 없고 편집 중이 아니면 편집 버튼 표시
-          <Button
-            className="p-1 text-gray-300 border border-gray-300 w-fit"
-            onClick={() => setIsEditing(true)}
-          >
-            <EditIcon size={iconSize} />
-          </Button>
+          // modal이 없고 편집 중이 아니면 값 텍스트 + 편집 버튼 표시
+          <HStack $css={{ gap: "$200" }} className="items-center">
+            {displayValue && <Text className="text-body2">{displayValue}</Text>}
+            {!noneEdit && (
+              <Button
+                className="p-1 text-gray-300 border border-gray-300 w-fit"
+                onClick={() => setIsEditing(true)}
+              >
+                <EditIcon size={iconSize} />
+              </Button>
+            )}
+          </HStack>
         ) : (
           // 인라인 편집 모드
-          <HStack $css={{ alignItems: "center", gap: "$150" }}>
+          <HStack $css={{ gap: "$150" }} className="items-center">
             <Input
               id={id}
               size={size}
               type={type}
               name={name}
               match={match}
+              defaultValue={defaultValue}
               readonly={readonly}
               disabled={disabled}
               invalid={invalid}

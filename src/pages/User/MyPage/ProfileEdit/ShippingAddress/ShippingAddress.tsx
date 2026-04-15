@@ -16,18 +16,10 @@ export default function ShippingAddress() {
   const phone = profile?.phone ?? "";
 
   return (
-    <VStack
-      $css={{ gap: "$200" }}
-      className="w-full p-7 border-[1px] border-gray-100 rounded-lg"
-    >
+    <VStack className="w-full px-8 py-4 border-[1px] border-gray-100 rounded-2xl">
       <HStack className="items-center justify-between w-full">
-        <VStack>
-          <HStack
-            $css={{
-              gap: "$100",
-              alignItems: "center",
-            }}
-          >
+        <VStack className="gap-1">
+          <HStack className="items-center gap-2">
             <Text className="text-h5">{recipient}</Text>
             <Text className="text-gray-300 text-body5">•</Text>
             <Text className="text-gray-400 text-body4">{phone}</Text>

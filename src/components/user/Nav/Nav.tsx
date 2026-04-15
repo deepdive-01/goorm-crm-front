@@ -86,11 +86,11 @@ export default function Nav({
                   <Menu.Trigger
                     nativeButton={false}
                     render={
-                      <button>
+                      <div>
                         <Avatar.Root shape="circle" alt={alt}>
                           <Icon />
                         </Avatar.Root>
-                      </button>
+                      </div>
                     }
                   />
 
