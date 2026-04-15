@@ -8,6 +8,7 @@ const User = () => {
   return (
     <div>
       <Routes>
+        {/* / -> 해당 라우트는 ComponentExample을 렌더링 */}
         <Route path="/" element={<ComponentExample />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

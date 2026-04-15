@@ -5,6 +5,7 @@ const Admin = () => {
   return (
     <div>
       <Routes>
+        {/* admin/ -> DashBoardPage를 렌더링 */}
         <Route path="/" element={<DashBoardPage />} />
       </Routes>
     </div>
