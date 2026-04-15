@@ -7,7 +7,7 @@ export default function InputExample() {
   return (
     <VStack
       $css={{ gap: "$200" }}
-      className="w-full p-7 border-[1px] border-gray-100 rounded-lg"
+      className="w-1/2 p-7 border-[1px] border-gray-100 rounded-lg"
     >
       <Text className="text-h4">ShippingAddressModal</Text>
       {/* 기본 ShippingAddressModal */}
