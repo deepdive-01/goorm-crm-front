@@ -3,6 +3,8 @@ import ComponentExample from "../components/example/ComponentExample";
 import Login from "../pages/User/Auth/Login/Login";
 import Signup from "../pages/User/Auth/Signup/Signup";
 import ResetPassword from "../pages/User/Auth/ResetPassword/ResetPassword";
+import ProfileEdit from "../pages/User/MyPage/ProfileEdit/ProfileEdit";
+import MyPage from "../pages/User/MyPage/MyPage";
 
 const User = () => {
   return (
@@ -13,6 +15,8 @@ const User = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
+        <Route path="/myPage" element={<MyPage />} />
+        <Route path="/profileEdit" element={<ProfileEdit />} />
       </Routes>
     </div>
   );

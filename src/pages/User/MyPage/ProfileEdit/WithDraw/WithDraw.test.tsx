@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { server } from "../../../../../mocks/server";
 import { UserProvider } from "../../../../../context/UserContext";
 import WithDraw from "./WithDraw";
+import Login from "../../../Auth/Login/Login";
 
 /**
  * UserProvider: deleteAccount API를 useUserContext로 사용하기 위해 필요
@@ -25,7 +26,7 @@ const renderWithDraw = (description?: string) =>
           }
         />
         {/* 탈퇴 성공 후 navigate("/login")으로 이동하는지 확인하는 더미 페이지 */}
-        <Route path="/login" element={<div>로그인 페이지</div>} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -133,8 +134,11 @@ describe("WithDraw", () => {
         "test1234!",
       );
       await user.click(screen.getByRole("button", { name: "회원 탈퇴하기" }));
+      // Login 컴포넌트의 email input이 렌더링되면 /login으로 이동한 것으로 판단
       await waitFor(() => {
-        expect(screen.getByText("로그인 페이지")).toBeInTheDocument();
+        expect(
+          screen.getByRole("textbox", { name: "이메일" }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -190,8 +194,10 @@ describe("WithDraw", () => {
           screen.getByText("회원 탈퇴에 실패했습니다. 다시 시도해주세요."),
         ).toBeInTheDocument();
       });
-      // 에러 상태에서 로그인 페이지로 이동하지 않아야 함
-      expect(screen.queryByText("로그인 페이지")).not.toBeInTheDocument();
+      // 에러 상태에서 로그인 페이지로 이동하지 않아야 함 (Login의 email input이 없어야 함)
+      expect(
+        screen.queryByRole("textbox", { name: "이메일" }),
+      ).not.toBeInTheDocument();
     });
 
     it("탈퇴 중에는 탈퇴 버튼이 비활성화된다", async () => {
@@ -237,8 +243,11 @@ describe("WithDraw", () => {
         "test1234!",
       );
       await user.click(screen.getByRole("button", { name: "회원 탈퇴하기" }));
+      // Login 컴포넌트의 email input이 렌더링되면 /login으로 이동한 것으로 판단
       await waitFor(() => {
-        expect(screen.getByText("로그인 페이지")).toBeInTheDocument();
+        expect(
+          screen.getByRole("textbox", { name: "이메일" }),
+        ).toBeInTheDocument();
       });
     });
   });
