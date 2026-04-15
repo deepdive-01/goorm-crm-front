@@ -31,6 +31,7 @@ export interface InputProps {
   textClassName?: string;
   inputClassName?: string;
   descriptionClassName?: string;
+  suffixClassName?: string;
   errorClassName?: string;
   suffix?: React.ReactNode;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
