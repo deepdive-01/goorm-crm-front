@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { cloneElement, isValidElement, useState } from "react";
 
-import { Button, Field, HStack } from "@vapor-ui/core";
-import { EditIcon } from "@vapor-ui/icons";
+import { Button, Dialog, Field, HStack } from "@vapor-ui/core";
 import { CloseOutlineIcon } from "@vapor-ui/icons";
 import { ConfirmOutlineIcon } from "@vapor-ui/icons";
+import { EditIcon } from "@vapor-ui/icons";
 
-import Input from "../../common/Input/Input";
 import type { InputProps } from "../../../types/input.types";
+import Input from "../../common/Input/Input";
 
 interface EditProps extends InputProps {
   onConfirm?: (value: string) => void;
   onCancel?: () => void;
+  // modal이 있으면 인라인 편집 대신 모달을 열어 처리
+  // Dialog.Header + Dialog.Body + Dialog.Footer 형태의 ReactNode을 전달
+  // modal 컴포넌트는 onClose?: () => void prop을 받을 수 있음
+  modal?: React.ReactNode;
 }
 
 export default function Edit({
@@ -34,6 +38,7 @@ export default function Edit({
   onChange,
   onConfirm,
   onCancel,
+  modal,
 }: EditProps) {
   const iconSize = 22;
   const [isEditing, setIsEditing] = useState(false);
@@ -63,7 +68,35 @@ export default function Edit({
         $css={{ gap: "$100" }}
         className={`flex items-center ${labelClassName ?? ""}`}
       >
-        {!isEditing ? (
+        {modal ? (
+          // modal prop이 있으면 편집 버튼 클릭 시 인라인 편집 대신 모달을 열어 처리
+          <Dialog.Root
+            open={isEditing}
+            onOpenChange={(open) => setIsEditing(open)}
+          >
+            <Dialog.Trigger
+              render={
+                <Button className="p-1 text-gray-300 border border-gray-300 w-fit">
+                  <EditIcon size={iconSize} />
+                </Button>
+              }
+            />
+            <Dialog.PortalPrimitive>
+              <Dialog.OverlayPrimitive />
+              <Dialog.PopupPrimitive>
+                {isValidElement(modal)
+                  ? cloneElement(
+                      modal as React.ReactElement<{ onClose?: () => void }>,
+                      {
+                        onClose: () => setIsEditing(false),
+                      },
+                    )
+                  : modal}
+              </Dialog.PopupPrimitive>
+            </Dialog.PortalPrimitive>
+          </Dialog.Root>
+        ) : !isEditing ? (
+          // modal이 없고 편집 중이 아니면 편집 버튼 표시
           <Button
             className="p-1 text-gray-300 border border-gray-300 w-fit"
             onClick={() => setIsEditing(true)}
@@ -71,6 +104,7 @@ export default function Edit({
             <EditIcon size={iconSize} />
           </Button>
         ) : (
+          // 인라인 편집 모드
           <HStack $css={{ alignItems: "center", gap: "$150" }}>
             <Input
               id={id}
