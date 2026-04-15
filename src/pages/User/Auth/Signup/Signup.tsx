@@ -107,7 +107,7 @@ export default function Signup() {
             size={size}
             variant="fill"
             type="submit"
-            className="w-full text-white bg-blue-500 text-body4"
+            className="w-full text-white bg-primary-500 text-body4"
             disabled={passwordMismatch}
           >
             회원가입

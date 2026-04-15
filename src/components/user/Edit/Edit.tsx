@@ -133,7 +133,7 @@ export default function Edit({
             </Button>
 
             <Button
-              className="p-1 text-blue-500 border border-blue-500 w-fit"
+              className="p-1 border text-primary-500 border-primary-500 w-fit"
               onClick={handleConfirm}
             >
               <ConfirmOutlineIcon size={iconSize} />

@@ -95,7 +95,7 @@ export default function Login() {
             size={size}
             variant="fill"
             type="submit"
-            className="w-full text-white bg-blue-500 text-body4"
+            className="w-full text-white bg-primary-500 text-body4"
           >
             로그인
           </Button>

@@ -70,7 +70,7 @@ export default function AuthenticationForm({
             type="button"
             disabled={!isValidEmail}
             onClick={handleSendCode}
-            className="w-full px-4 text-white bg-blue-500 xl:w-fit xl:rounded-l-none text-body4"
+            className="w-full px-4 text-white bg-primary-500 xl:w-fit xl:rounded-l-none text-body4"
           >
             인증번호 받기
           </Button>
@@ -123,7 +123,7 @@ export default function AuthenticationForm({
           variant="fill"
           type="button"
           onClick={handleSubmit}
-          className="w-full px-4 text-white bg-blue-500 text-body4"
+          className="w-full px-4 text-white bg-primary-500 text-body4"
           disabled={code.trim().length !== 6 || isVerified}
         >
           {isVerified ? "인증 완료됨" : submitLabel}
