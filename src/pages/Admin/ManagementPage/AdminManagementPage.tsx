@@ -10,14 +10,16 @@ import {
 } from "../../../services/adminManagement";
 import type { AdminUser } from "../../../types/DashBoardPage.types";
 
-const TABLE_HEADINGS = ["번호", "이름", "이메일"] as const;
+// 테이블 헤더
+const TABLE_HEADINGS = ["관리자ID", "이름", "이메일"] as const;
 
 export default function AdminManagementPage() {
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const [admins, setAdmins] = useState<ManagedAdmin[]>([]);
-  const [selected, setSelected] = useState<ManagedAdmin | null>(null);
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [user, setUser] = useState<AdminUser | null>(null); // 현재 로그인 관리자 정보
+  const [admins, setAdmins] = useState<ManagedAdmin[]>([]); // 관리자 목록
+  const [selected, setSelected] = useState<ManagedAdmin | null>(null); // 선택한 관리자 정보
+  const [isPanelOpen, setIsPanelOpen] = useState(false); // 상세 패널 열림 상태
 
+  // 페이지 로드 시 관리자 정보와 관리자 목록 불러오기
   useEffect(() => {
     fetchAdminMe()
       .then(setUser)
@@ -27,19 +29,24 @@ export default function AdminManagementPage() {
       .catch(() => {});
   }, []);
 
+  // 테이블 행을 눌렀을 때 해당 관리자의 정보 상세 패널 열기
   function handleRowClick(admin: ManagedAdmin) {
     setSelected(admin);
     setIsPanelOpen(true);
   }
 
+  // 상세 패널에서 저장 버튼을 눌렀을 때
   async function handleSave(
-    id: string,
-    payload: Partial<Pick<ManagedAdmin, "grade" | "phone">>,
+    id: string, // 관리자의 ID
+    payload: Partial<Pick<ManagedAdmin, "grade" | "phone">>, // 수정할 정보
   ) {
-    await updateManagedAdmin(id, payload);
-    setAdmins((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, ...payload } : a)),
+    await updateManagedAdmin(id, payload); // 정보 업데이트 API 호출
+    setAdmins(
+      (
+        prev, // 업데이트된 정보를 로컬에 반영
+      ) => prev.map((a) => (a.id === id ? { ...a, ...payload } : a)),
     );
+    // 관리자의 정보도 업데이트
     setSelected((prev) => (prev?.id === id ? { ...prev, ...payload } : prev));
   }
 
@@ -103,7 +110,7 @@ export default function AdminManagementPage() {
         </div>
       </main>
 
-      {/* 우측 슬라이드 드로어 */}
+      {/* 우측 슬라이드 */}
       {selected && (
         <UserDetailPanel
           variant="admin"

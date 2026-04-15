@@ -48,7 +48,7 @@ function buildCards(stats: DashboardStats): DashBoardProps[] {
       thirdTitle: "탈퇴 요청",
       thirdValue: member_management.withdrawal_requested,
       routeButton: "상세보기 →",
-      route: "/admin/management",
+      route: "/admin/member-management",
     },
     {
       dashBoardImage: "/admin/DashBoard/Admin.svg",
@@ -63,7 +63,7 @@ function buildCards(stats: DashboardStats): DashBoardProps[] {
       thirdTitle: "최근 활동",
       thirdValue: lastActive,
       routeButton: "상세보기 →",
-      route: "/admin/admins",
+      route: "/admin/admin-management",
     },
     {
       dashBoardImage: "/admin/DashBoard/Rank.svg",

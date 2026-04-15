@@ -25,8 +25,8 @@ const PROVINCES = [
   "제주",
 ] as const;
 
-const MEMBER_GRADES = ["VIP", "GOLD", "SILVER", "일반"] as const;
-const ADMIN_GRADES = ["Root", "Super", "일반"] as const;
+const MEMBER_GRADES = ["Member", "Bronze", "Silver", "Gold"] as const;
+const ADMIN_GRADES = ["Root", "일반"] as const;
 
 // ─── 주소 파싱 헬퍼 ──────────────────────────────────────
 function parseAddress(address: string) {
@@ -288,7 +288,7 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
 
           {isMember && (
             <>
-              <Field label="시도" required>
+              <Field label="도시" required>
                 <SelectDropdown
                   value={province}
                   options={PROVINCES}
@@ -300,7 +300,7 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
                 <TextInput
                   value={detail}
                   onValueChange={setDetail}
-                  className="text-body4"
+                  className="text-body4 p-2"
                 />
               </Field>
             </>
@@ -310,7 +310,7 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
             <TextInput
               value={phone}
               onValueChange={setPhone}
-              className="text-body4"
+              className="text-body4 p-2"
             />
           </Field>
 
