@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import "@fontsource/pretendard";
 import "./index.css";
 import App from "./App.tsx";
+import { UserProvider } from "./context/UserContext";
 
 async function enableMocking() {
   if (import.meta.env.DEV) {
@@ -16,7 +17,9 @@ enableMocking().then(() => {
   createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <ThemeProvider>
-        <App />
+        <UserProvider>
+          <App />
+        </UserProvider>
       </ThemeProvider>
     </BrowserRouter>,
   );
