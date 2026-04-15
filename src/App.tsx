@@ -1,20 +1,15 @@
 import { Routes, Route } from "react-router-dom";
-import ComponentExample from "./components/example/ComponentExample";
-import Signup from "./pages/User/Auth/Signup/Signup";
-import AdminRoutes from "./routes/Admin/AdminRoutes";
-import Login from "./pages/User/Auth/Login/Login";
-import ResetPassword from "./pages/User/Auth/ResetPassword/ResetPassword";
+import User from "./routes/User";
+import Admin from "./routes/Admin";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<ComponentExample />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/resetPassword" element={<ResetPassword />} />
-      {AdminRoutes.map((route) => (
-        <Route key={route.props.path} {...route.props} />
-      ))}
+      {/* User 안에 있는 파일은 /의 경로로 시작 */}
+      <Route path="/*" element={<User />} />
+
+      {/* Admin 안에 있는 파일은 /admin의 경로로 시작 */}
+      <Route path="/admin/*" element={<Admin />} />
     </Routes>
   );
 }
