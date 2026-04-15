@@ -16,18 +16,21 @@ export default function AdminManagementPage() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [admins, setAdmins] = useState<ManagedAdmin[]>([]);
   const [selected, setSelected] = useState<ManagedAdmin | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   useEffect(() => {
     fetchAdminMe()
       .then(setUser)
       .catch(() => {});
     fetchManagedAdmins()
-      .then((data) => {
-        setAdmins(data);
-        setSelected(data[0] ?? null);
-      })
+      .then(setAdmins)
       .catch(() => {});
   }, []);
+
+  function handleRowClick(admin: ManagedAdmin) {
+    setSelected(admin);
+    setIsPanelOpen(true);
+  }
 
   async function handleSave(
     id: string,
@@ -54,71 +57,62 @@ export default function AdminManagementPage() {
           <span className="text-body5 text-primary-500">관리자 관리</span>
           <h1 className="text-h2 font-bold">관리자 관리</h1>
           <p className="text-body2 font-medium text-gray-300 mb-4">
-            관리자 정보를 조회하고 권한을 수정할 수 있습니다
+            특정 관리자의 상세 정보를 수정할 수 있는 기능입니다
           </p>
         </div>
 
-        {/* 분할 레이아웃 */}
-        <div className="flex gap-4 flex-1">
-          {/* 좌측: 관리자 목록 테이블 */}
-          <div className="flex-1 border border-gray-90 rounded-lg overflow-hidden self-start">
-            <VaporTable.Root
-              $css={{ width: "100%", borderCollapse: "collapse" }}
-            >
-              <VaporTable.Header className="bg-gray-50">
-                <VaporTable.Row>
-                  {TABLE_HEADINGS.map((heading) => (
-                    <VaporTable.Heading
-                      key={heading}
-                      className="text-body3 text-gray-300 px-4 py-3 text-left"
-                    >
-                      {heading}
-                    </VaporTable.Heading>
-                  ))}
-                </VaporTable.Row>
-              </VaporTable.Header>
-              <VaporTable.Body>
-                {admins.map((admin) => (
-                  <VaporTable.Row
-                    key={admin.id}
-                    className={`border-t border-gray-90 cursor-pointer transition-colors ${
-                      selected?.id === admin.id
-                        ? "bg-semantic-blueSoft"
-                        : "hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelected(admin)}
+        {/* 테이블 */}
+        <div className="border border-gray-90 rounded-lg overflow-hidden">
+          <VaporTable.Root $css={{ width: "100%", borderCollapse: "collapse" }}>
+            <VaporTable.Header className="bg-gray-50">
+              <VaporTable.Row>
+                {TABLE_HEADINGS.map((heading) => (
+                  <VaporTable.Heading
+                    key={heading}
+                    className="text-body3 text-gray-300 px-4 py-3 text-left"
                   >
-                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                      {admin.id}
-                    </VaporTable.Cell>
-                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                      {admin.name}
-                    </VaporTable.Cell>
-                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                      {admin.email}
-                    </VaporTable.Cell>
-                  </VaporTable.Row>
+                    {heading}
+                  </VaporTable.Heading>
                 ))}
-              </VaporTable.Body>
-            </VaporTable.Root>
-          </div>
-
-          {/* 우측: 상세 편집 패널 */}
-          <div className="w-80 border border-gray-90 rounded-lg flex-shrink-0">
-            {selected ? (
-              <UserDetailPanel
-                variant="admin"
-                data={selected}
-                onSave={handleSave}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-64 text-body4 text-gray-300">
-                관리자를 선택하세요
-              </div>
-            )}
-          </div>
+              </VaporTable.Row>
+            </VaporTable.Header>
+            <VaporTable.Body>
+              {admins.map((admin) => (
+                <VaporTable.Row
+                  key={admin.id}
+                  className={`border-t border-gray-90 cursor-pointer transition-colors ${
+                    selected?.id === admin.id && isPanelOpen
+                      ? "bg-semantic-blueSoft"
+                      : "hover:bg-gray-50"
+                  }`}
+                  onClick={() => handleRowClick(admin)}
+                >
+                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                    {admin.id}
+                  </VaporTable.Cell>
+                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                    {admin.name}
+                  </VaporTable.Cell>
+                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                    {admin.email}
+                  </VaporTable.Cell>
+                </VaporTable.Row>
+              ))}
+            </VaporTable.Body>
+          </VaporTable.Root>
         </div>
       </main>
+
+      {/* 우측 슬라이드 드로어 */}
+      {selected && (
+        <UserDetailPanel
+          variant="admin"
+          data={selected}
+          isOpen={isPanelOpen}
+          onClose={() => setIsPanelOpen(false)}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }
