@@ -137,7 +137,10 @@ export default function ShippingAddressModal({
         {/* 취소: Dialog.Close로 감싸 클릭 시 모달 즉시 닫기 */}
         <Dialog.Close
           render={
-            <Button className="px-4 text-gray-400 border text-body4 bg-gray-50 border-90">
+            <Button
+              size="lg"
+              className="px-4 text-gray-400 border text-body4 bg-gray-90 border-90"
+            >
               취소
             </Button>
           }
@@ -148,7 +151,8 @@ export default function ShippingAddressModal({
          * isSaving 중에는 버튼 비활성화해 중복 요청 방지
          */}
         <Button
-          className="px-4 text-white bg-blue-500 text-body4"
+          size="lg"
+          className="px-4 text-white bg-primary-500 text-body4"
           onClick={handleSave}
           disabled={isSaving}
         >

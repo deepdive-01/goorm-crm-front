@@ -3,7 +3,7 @@ import Edit from "../user/Edit/Edit";
 import ShippingAddressModal from "../../pages/User/MyPage/ProfileEdit/ShippingAddress/modal/ShippingAddressModal";
 import ShippingAddress from "../../pages/User/MyPage/ProfileEdit/ShippingAddress/ShippingAddress";
 
-export default function InputExample() {
+export default function ShippingAddressExample() {
   return (
     <VStack
       $css={{ gap: "$200" }}
