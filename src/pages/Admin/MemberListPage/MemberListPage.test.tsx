@@ -160,11 +160,11 @@ describe("MemberListPage 필터 테스트", () => {
     const user = userEvent.setup();
     renderMemberListPage();
     await user.click(screen.getByRole("button", { name: "등급" }));
-    expect(screen.getByRole("button", { name: "VIP" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "일반" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Gold" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Member" })).toBeInTheDocument();
   });
 
-  it("등급 필터 'VIP' 선택 시 VIP 회원만 표시된다.", async () => {
+  it("등급 필터 'Gold' 선택 시 Gold 회원만 표시된다.", async () => {
     const user = userEvent.setup();
     renderMemberListPage();
     await waitFor(() => {
@@ -172,11 +172,11 @@ describe("MemberListPage 필터 테스트", () => {
     });
 
     await user.click(screen.getByRole("button", { name: "등급" }));
-    await user.click(screen.getByRole("button", { name: "VIP" }));
+    await user.click(screen.getByRole("button", { name: "Gold" }));
 
     await waitFor(() => {
-      expect(screen.getByText("김민준")).toBeInTheDocument();
-      expect(screen.queryByText("이서연")).not.toBeInTheDocument();
+      expect(screen.getByText("김민준")).toBeInTheDocument(); // Gold
+      expect(screen.queryByText("이서연")).not.toBeInTheDocument(); // Member
     });
   });
 });
