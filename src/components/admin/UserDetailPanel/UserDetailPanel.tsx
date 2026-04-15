@@ -3,46 +3,20 @@ import { CaretDownIcon, CloseOutlineIcon, UserIcon } from "@vapor-ui/icons";
 import { TextInput } from "@vapor-ui/core";
 import type { ManagedMember } from "../../../services/memberManagement";
 import type { ManagedAdmin } from "../../../services/adminManagement";
+import type { SelectDropdownProps } from "../../../types/userDetailPanel.types";
+import {
+  PROVINCES,
+  MEMBER_GRADES,
+  ADMIN_GRADES,
+} from "../../../types/userDetailPanel.types";
 
-// ─── 시도 목록 ────────────────────────────────────────────
-const PROVINCES = [
-  "서울",
-  "경기",
-  "부산",
-  "인천",
-  "대구",
-  "광주",
-  "대전",
-  "울산",
-  "세종",
-  "강원",
-  "충북",
-  "충남",
-  "전북",
-  "전남",
-  "경북",
-  "경남",
-  "제주",
-] as const;
-
-const MEMBER_GRADES = ["Member", "Bronze", "Silver", "Gold"] as const;
-const ADMIN_GRADES = ["Root", "일반"] as const;
-
-// ─── 주소 파싱 헬퍼 ──────────────────────────────────────
+// 주소 파싱
 function parseAddress(address: string) {
   const parts = address.split(" ");
   return {
     province: parts[0] ?? "",
     detail: parts.slice(1).join(" "),
   };
-}
-
-// ─── SelectDropdown ───────────────────────────────────────
-interface SelectDropdownProps {
-  value: string;
-  options: readonly string[];
-  onChange: (v: string) => void;
-  primary?: boolean; // 파란색 스타일
 }
 
 function SelectDropdown({
@@ -238,114 +212,124 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* 헤더 */}
-        <div className="flex items-start justify-between px-6 py-5 border-b border-gray-90">
-          <div>
-            <h2 className="text-body2 font-bold text-gray-400">{panelTitle}</h2>
-            <p className="text-body5 text-gray-300 mt-0.5">{panelSubtitle}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-300 hover:bg-gray-50 hover:text-gray-400 transition-colors mt-0.5"
-            aria-label="패널 닫기"
-          >
-            <CloseOutlineIcon size={18} />
-          </button>
-        </div>
-
-        {/* 유저 정보 */}
-        <div className="flex items-center gap-3 px-6 py-4">
-          <div className="w-10 h-10 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
-            <UserIcon size={20} className="text-primary-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-body4 font-semibold text-gray-400 truncate">
-              {data.name}
-            </p>
-            <p className="text-body5 text-gray-300 truncate">{data.email}</p>
-          </div>
-          {isMember && (
-            <button
-              type="button"
-              onClick={handleDeactivate}
-              className="flex-shrink-0 border border-red-400 text-red-400 text-body5 font-medium px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
-            >
-              {status === "ACTIVE" ? "비활성화" : "활성화"}
-            </button>
-          )}
-        </div>
-
-        <hr className="mx-6 border-gray-90" />
-
-        {/* 폼 */}
-        <div className="flex-1 px-6 py-5 flex flex-col gap-4 overflow-y-auto">
-          <Field label="이름" required>
-            <div className="border border-gray-90 rounded-lg px-3 py-2.5 text-body4 text-gray-300 bg-gray-50">
-              {data.name}
+        {isOpen && (
+          <>
+            {/* 헤더 */}
+            <div className="flex items-start justify-between px-6 py-5 border-b border-gray-90">
+              <div>
+                <h2 className="text-body2 font-bold text-gray-400">
+                  {panelTitle}
+                </h2>
+                <p className="text-body5 text-gray-300 mt-0.5">
+                  {panelSubtitle}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-gray-300 hover:bg-gray-50 hover:text-gray-400 transition-colors mt-0.5"
+                aria-label="패널 닫기"
+              >
+                <CloseOutlineIcon size={18} />
+              </button>
             </div>
-          </Field>
 
-          {isMember && (
-            <>
-              <Field label="도시" required>
-                <SelectDropdown
-                  value={province}
-                  options={PROVINCES}
-                  onChange={setProvince}
-                />
+            {/* 유저 정보 */}
+            <div className="flex items-center gap-3 px-6 py-4">
+              <div className="w-10 h-10 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
+                <UserIcon size={20} className="text-primary-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-body4 font-semibold text-gray-400 truncate">
+                  {data.name}
+                </p>
+                <p className="text-body5 text-gray-300 truncate">
+                  {data.email}
+                </p>
+              </div>
+              {isMember && (
+                <button
+                  type="button"
+                  onClick={handleDeactivate}
+                  className="flex-shrink-0 border border-red-400 text-red-400 text-body5 font-medium px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  {status === "ACTIVE" ? "비활성화" : "활성화"}
+                </button>
+              )}
+            </div>
+
+            <hr className="mx-6 border-gray-90" />
+
+            {/* 폼 */}
+            <div className="flex-1 px-6 py-5 flex flex-col gap-4 overflow-y-auto">
+              <Field label="이름" required>
+                <div className="border border-gray-90 rounded-lg px-3 py-2.5 text-body4 text-gray-300 bg-gray-50">
+                  {data.name}
+                </div>
               </Field>
 
-              <Field label="상세주소" required>
+              {isMember && (
+                <>
+                  <Field label="도시" required>
+                    <SelectDropdown
+                      value={province}
+                      options={PROVINCES}
+                      onChange={setProvince}
+                    />
+                  </Field>
+
+                  <Field label="상세주소" required>
+                    <TextInput
+                      value={detail}
+                      onValueChange={setDetail}
+                      className="text-body4 p-2"
+                    />
+                  </Field>
+                </>
+              )}
+
+              <Field label="연락처" required>
                 <TextInput
-                  value={detail}
-                  onValueChange={setDetail}
+                  value={phone}
+                  onValueChange={setPhone}
                   className="text-body4 p-2"
                 />
               </Field>
-            </>
-          )}
 
-          <Field label="연락처" required>
-            <TextInput
-              value={phone}
-              onValueChange={setPhone}
-              className="text-body4 p-2"
-            />
-          </Field>
+              {isMember && (
+                <Field label="상태" required>
+                  <StatusBadge status={status} />
+                </Field>
+              )}
 
-          {isMember && (
-            <Field label="상태" required>
-              <StatusBadge status={status} />
-            </Field>
-          )}
+              <Field label={gradeLabel} required>
+                <SelectDropdown
+                  value={grade}
+                  options={gradeOptions}
+                  onChange={setGrade}
+                  primary
+                />
+              </Field>
 
-          <Field label={gradeLabel} required>
-            <SelectDropdown
-              value={grade}
-              options={gradeOptions}
-              onChange={setGrade}
-              primary
-            />
-          </Field>
-
-          <Field label="가입일">
-            <div className="border border-gray-90 rounded-lg px-3 py-2.5 text-body4 text-gray-300 bg-gray-50">
-              {data.created_at}
+              <Field label="가입일">
+                <div className="border border-gray-90 rounded-lg px-3 py-2.5 text-body4 text-gray-300 bg-gray-50">
+                  {data.created_at}
+                </div>
+              </Field>
             </div>
-          </Field>
-        </div>
 
-        {/* 저장 버튼 */}
-        <div className="px-6 py-5 border-t border-gray-90">
-          <button
-            type="button"
-            onClick={handleSave}
-            className="w-full bg-primary-500 text-white text-body4 font-medium py-3 rounded-lg hover:bg-primary-400 transition-colors"
-          >
-            저장하기
-          </button>
-        </div>
+            {/* 저장 버튼 */}
+            <div className="px-6 py-5 border-t border-gray-90">
+              <button
+                type="button"
+                onClick={handleSave}
+                className="w-full bg-primary-500 text-white text-body4 font-medium py-3 rounded-lg hover:bg-primary-400 transition-colors"
+              >
+                저장하기
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
