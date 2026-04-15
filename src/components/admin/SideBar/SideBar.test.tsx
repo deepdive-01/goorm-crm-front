@@ -146,8 +146,8 @@ describe("SideBar 메뉴 활성 상태 테스트", () => {
     localStorage.clear();
   });
 
-  it("현재 경로가 /admin/dashboard 이면 대시보드 버튼이 활성 스타일이어야 한다.", () => {
-    renderSideBar({}, "/admin/dashboard");
+  it("현재 경로가 /admin 이면 대시보드 버튼이 활성 스타일이어야 한다.", () => {
+    renderSideBar({}, "/admin");
     const dashboardButton = screen.getByRole("button", { name: /대시보드/i });
     expect(dashboardButton).toHaveClass("bg-gray-50");
   });

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import DashBoard from "../../components/admin/DashBoard/DashBoard";
-import SideBar from "../../components/admin/SideBar/SideBar";
-import { fetchAdminMe, fetchDashboardStats } from "../../services/dashboard";
-import type { DashBoardProps } from "../../types/dashBoard.types";
+import DashBoard from "../../../components/admin/DashBoard/DashBoard";
+import SideBar from "../../../components/admin/SideBar/SideBar";
+import { fetchAdminMe, fetchDashboardStats } from "../../../services/dashboard";
+import type { DashBoardProps } from "../../../types/dashBoard.types";
 import type {
   AdminUser,
   DashboardStats,
-} from "../../types/DashBoardPage.types";
+} from "../../../types/DashBoardPage.types";
 
 // 카드 생성 함수
 function buildCards(stats: DashboardStats): DashBoardProps[] {
@@ -114,8 +114,8 @@ export default function DashBoardPage() {
         <div className="w-fit flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <span className="text-body5 text-primary-500">대시보드</span>
-            <h1 className="text-h1 font-bold">대시보드</h1>
-            <div className="text-body1 font-medium text-gray-300">
+            <h1 className="text-h2 font-bold">대시보드</h1>
+            <div className="text-body2 font-medium text-gray-300">
               관리자 시스템의 주요 지표를 확인해보세요
             </div>
           </div>

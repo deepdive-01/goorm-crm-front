@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pagination, Table as VaporTable } from "@vapor-ui/core";
-import type { TableProps } from "../../../types/table.types";
+import type { MemberRow, TableProps } from "../../../types/table.types";
 
 export default function Table(props: TableProps) {
   // 페이지네이션 설정, 기본 페이지 크기는 10으로 설정
@@ -31,9 +31,7 @@ export default function Table(props: TableProps) {
             alignItems: "center",
           }}
         >
-          <Pagination.ItemPrimitive>
-            <Pagination.Previous>{"<"}</Pagination.Previous>
-          </Pagination.ItemPrimitive>
+          <Pagination.Previous>{"<"}</Pagination.Previous>
 
           <Pagination.Items>
             {(pages) =>
@@ -66,69 +64,51 @@ export default function Table(props: TableProps) {
     </div>
   );
 
-  // variant에 따라 다른 테이블 렌더링
-  if (props.variant === "member") {
-    const sliced = props.data.slice(
-      (currentPage - 1) * pageSize,
-      currentPage * pageSize,
-    );
-
-    // member는 6개의 컬럼을 고정, simple은 3개의 컬럼을 고정
-    // heading을 props로 받아서 렌더링 되도록 수정
-    return (
-      <div>
-        <VaporTable.Root $css={{ width: "100%" }}>
-          <VaporTable.Header>
-            <VaporTable.Row>
-              {props.headings.map((heading) => (
-                <VaporTable.Heading key={heading}>{heading}</VaporTable.Heading>
-              ))}
-            </VaporTable.Row>
-          </VaporTable.Header>
-          <VaporTable.Body>
-            {sliced.map((row, i) => (
-              <VaporTable.Row key={i}>
-                <VaporTable.Cell>{row.row_1}</VaporTable.Cell>
-                <VaporTable.Cell>{row.row_2}</VaporTable.Cell>
-                <VaporTable.Cell>{row.row_3}</VaporTable.Cell>
-                <VaporTable.Cell>{row.row_4}</VaporTable.Cell>
-                <VaporTable.Cell>{row.row_5}</VaporTable.Cell>
-                <VaporTable.Cell>{row.row_6}</VaporTable.Cell>
-              </VaporTable.Row>
-            ))}
-          </VaporTable.Body>
-        </VaporTable.Root>
-        {renderPagination()}
-      </div>
-    );
-  }
-
-  // simple variant
   const sliced = props.data.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
   );
 
+  const cells = (row: (typeof sliced)[number]): (string | number)[] => {
+    if (props.variant === "member") {
+      const r = row as MemberRow;
+      return [r.row_1, r.row_2, r.row_3, r.row_4, r.row_5, r.row_6];
+    }
+    return [row.row_1, row.row_2, row.row_3];
+  };
+
   return (
     <div>
-      <VaporTable.Root $css={{ width: "100%" }}>
-        <VaporTable.Header>
-          <VaporTable.Row>
-            {props.headings.map((heading) => (
-              <VaporTable.Heading key={heading}>{heading}</VaporTable.Heading>
-            ))}
-          </VaporTable.Row>
-        </VaporTable.Header>
-        <VaporTable.Body>
-          {sliced.map((row, i) => (
-            <VaporTable.Row key={i}>
-              <VaporTable.Cell>{row.row_1}</VaporTable.Cell>
-              <VaporTable.Cell>{row.row_2}</VaporTable.Cell>
-              <VaporTable.Cell>{row.row_3}</VaporTable.Cell>
+      <div className="border border-gray-90 rounded-lg overflow-hidden">
+        <VaporTable.Root $css={{ width: "100%", borderCollapse: "collapse" }}>
+          <VaporTable.Header className="bg-gray-50">
+            <VaporTable.Row>
+              {props.headings.map((heading) => (
+                <VaporTable.Heading
+                  key={heading}
+                  className="text-body3 text-gray-300 px-4 py-3 text-left"
+                >
+                  {heading}
+                </VaporTable.Heading>
+              ))}
             </VaporTable.Row>
-          ))}
-        </VaporTable.Body>
-      </VaporTable.Root>
+          </VaporTable.Header>
+          <VaporTable.Body>
+            {sliced.map((row, i) => (
+              <VaporTable.Row key={i} className="border-t border-gray-90">
+                {cells(row).map((cell, j) => (
+                  <VaporTable.Cell
+                    key={j}
+                    className="text-body4 text-gray-400 px-4 py-3"
+                  >
+                    {cell}
+                  </VaporTable.Cell>
+                ))}
+              </VaporTable.Row>
+            ))}
+          </VaporTable.Body>
+        </VaporTable.Root>
+      </div>
       {renderPagination()}
     </div>
   );
