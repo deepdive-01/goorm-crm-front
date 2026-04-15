@@ -1,18 +1,12 @@
 import { Routes, Route } from "react-router-dom";
-import ComponentExample from "./components/example/ComponentExample";
-import Signup from "./pages/User/Auth/Signup/Signup";
-import DashBoardPage from "./pages/Admin/DashBoardPage";
-import Login from "./pages/User/Auth/Login/Login";
-import ResetPassword from "./pages/User/Auth/ResetPassword/ResetPassword";
+import User from "./routes/User";
+import Admin from "./routes/Admin";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<ComponentExample />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/resetPassword" element={<ResetPassword />} />
-      <Route path="/admin/dashboard" element={<DashBoardPage />} />
+      <Route path="/*" element={<User />} />
+      <Route path="/admin/*" element={<Admin />} />
     </Routes>
   );
 }
