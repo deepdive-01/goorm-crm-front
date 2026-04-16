@@ -3,6 +3,7 @@ import DashBoardPage from "../pages/Admin/DashBoardPage/DashBoardPage";
 import MemberListPage from "../pages/Admin/MemberListPage/MemberListPage";
 import MemberManagementPage from "../pages/Admin/ManagementPage/MemberManagementPage";
 import AdminManagementPage from "../pages/Admin/ManagementPage/AdminManagementPage";
+import GradeManagementPage from "../pages/Admin/ManagementPage/GradeManagementPage";
 
 const Admin = () => {
   return (
@@ -14,6 +15,7 @@ const Admin = () => {
         <Route path="/members" element={<MemberListPage />} />
         <Route path="/member-management" element={<MemberManagementPage />} />
         <Route path="/admin-management" element={<AdminManagementPage />} />
+        <Route path="/grade-management" element={<GradeManagementPage />} />
       </Routes>
     </div>
   );
