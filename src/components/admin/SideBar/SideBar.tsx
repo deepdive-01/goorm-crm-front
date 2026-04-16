@@ -8,6 +8,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import SideBarItem from "./SideBarItem";
 import { useSidebar } from "./useSidebar";
+import { useState } from "react";
 
 // 네비게이션 아이템 정의: 경로, 레이블, 아이콘
 const NAV_ITEMS = [
@@ -59,6 +60,7 @@ export default function SideBar({
   // 사이드바 열림/닫힘 상태 관리 훅
   const { isOpen, open, close } = useSidebar();
   const location = useLocation();
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // 프로필 드롭다운 및 로그아웃 메뉴 상태
 
   // 추후 넣을 네비게이션 훅
   const navigate = useNavigate();
@@ -131,19 +133,40 @@ export default function SideBar({
               </div>
             </div>
 
-            {/* 프로필 + 드롭다운 */}
-            <button
-              className="flex items-center gap-3 rounded-lg p-2 hover:bg-gray-50 transition-colors"
-              aria-label="프로필 메뉴"
-            >
-              <div className="w-9 h-9 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
-                <UserIcon size={20} className="text-primary-500" />
-              </div>
-              <CaretDownIcon
-                size={16}
-                className="text-gray-300 flex-shrink-0"
-              />
-            </button>
+            <div className="relative">
+              {isProfileOpen && (
+                <div className="absolute bottom-full mb-2 left-0 right-0 bg-white border border-gray-90 rounded-lg shadow-md overflow-hidden">
+                  <button
+                    className="w-full text-left px-4 py-2.5 text-body4 text-gray-400 hover:bg-gray-50 transition-colors"
+                    onClick={() => navigate("/admin/my-page")}
+                  >
+                    마이 페이지
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2.5 text-body4 text-red-400 hover:bg-gray-50 transition-colors"
+                    onClick={() => {
+                      // 로그아웃 로직 추가
+                    }}
+                  >
+                    로그아웃
+                  </button>
+                </div>
+              )}
+              {/* 프로필 + 드롭다운 */}
+              <button
+                className="flex items-center gap-3 rounded-lg p-2 hover:bg-gray-50 transition-colors"
+                aria-label="프로필 메뉴"
+                onClick={() => setIsProfileOpen((prev) => !prev)}
+              >
+                <div className="w-9 h-9 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
+                  <UserIcon size={20} className="text-primary-500" />
+                </div>
+                <CaretDownIcon
+                  size={16}
+                  className="text-gray-300 flex-shrink-0"
+                />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
