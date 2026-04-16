@@ -12,12 +12,14 @@ import type { AdminUser } from "../../../types/DashBoardPage.types";
 
 const TABLE_HEADINGS = ["번호", "이름", "이메일"] as const;
 
+// 회원 관리 페이지 컴포넌트
 export default function MemberManagementPage() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [members, setMembers] = useState<ManagedMember[]>([]);
   const [selected, setSelected] = useState<ManagedMember | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
+  // 본인 정보와 회원 목록 조회
   useEffect(() => {
     fetchAdminMe()
       .then(setUser)
@@ -27,11 +29,13 @@ export default function MemberManagementPage() {
       .catch(() => {});
   }, []);
 
+  // 상세 패널 열고 닫기
   function handleRowClick(member: ManagedMember) {
     setSelected(member);
     setIsPanelOpen(true);
   }
 
+  // 회원 정보 저장
   async function handleSave(
     id: string,
     payload: Partial<

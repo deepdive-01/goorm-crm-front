@@ -19,6 +19,7 @@ function parseAddress(address: string) {
   };
 }
 
+// 선택 드롭다운
 function SelectDropdown({
   value,
   options,
@@ -75,7 +76,6 @@ function SelectDropdown({
   );
 }
 
-// ─── 필드 래퍼 ────────────────────────────────────────────
 function Field({
   label,
   required,
@@ -112,7 +112,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-// ─── Props ────────────────────────────────────────────────
 interface MemberPanelProps {
   variant: "member";
   data: ManagedMember;
@@ -270,14 +269,6 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
 
               {isMember && (
                 <>
-                  <Field label="도시" required>
-                    <SelectDropdown
-                      value={province}
-                      options={PROVINCES}
-                      onChange={setProvince}
-                    />
-                  </Field>
-
                   <Field label="상세주소" required>
                     <TextInput
                       value={detail}
