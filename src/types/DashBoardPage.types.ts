@@ -3,6 +3,15 @@ export interface AdminUser {
   role: string;
 }
 
+export interface AdminProfile {
+  email: string;
+  name: string;
+  phone: string;
+  grade: string;
+  role: string;
+  created_at: string;
+}
+
 export interface DashboardStats {
   member_list: {
     total_count: number;
