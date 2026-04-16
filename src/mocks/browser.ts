@@ -5,6 +5,7 @@ import { dashboardHandlers } from "./handlers/dashboard";
 import { membersHandlers } from "./handlers/members";
 import { memberManagementHandlers } from "./handlers/memberManagement";
 import { adminManagementHandlers } from "./handlers/adminManagement";
+import { gradeManagementHandlers } from "./handlers/gradeManagement";
 import { passwordResetHandlers } from "./handlers/passwordReset";
 import { signupHandlers } from "./handlers/signup";
 import { userHandlers } from "./handlers/user";
@@ -17,5 +18,6 @@ export const worker = setupWorker(
   ...membersHandlers,
   ...memberManagementHandlers,
   ...adminManagementHandlers,
+  ...gradeManagementHandlers,
   ...userHandlers,
 );
