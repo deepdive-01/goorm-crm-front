@@ -3,6 +3,7 @@ import { HttpResponse, http } from "msw";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export const dashboardHandlers = [
+  // 관리자 개인정보 조회 API
   http.get(`${BASE_URL}/api/v1/admin/me`, () => {
     return HttpResponse.json({
       status: 200,
@@ -15,6 +16,20 @@ export const dashboardHandlers = [
         grade: "BRONZE",
         role: "ADMIN",
         created_at: "2026-01-01T09:00:00Z",
+      },
+    });
+  }),
+
+  // 관리자 개인정보 수정 API
+  http.patch(`${BASE_URL}/api/v1/admin/me`, async ({ request }) => {
+    const body = (await request.json()) as { name?: string; phone?: string };
+    return HttpResponse.json({
+      status: 200,
+      code: "ADMIN_PROFILE_UPDATE_SUCCESS",
+      message: "관리자 개인정보가 성공적으로 수정되었습니다.",
+      data: {
+        name: body.name,
+        phone: body.phone,
       },
     });
   }),
