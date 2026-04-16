@@ -63,10 +63,7 @@ export default function MemberListPage() {
     // 등급 필터링
     const matchesStatus =
       filters.status === "all" || row.row_5 === statusMap[filters.status];
-    const matchesGrade =
-      filters.grade === "all" ||
-      (filters.grade === "vip" && row.row_4 === "VIP") ||
-      (filters.grade === "general" && row.row_4 === "일반");
+    const matchesGrade = filters.grade === "all" || row.row_4 === filters.grade;
 
     return matchesSearch && matchesStatus && matchesGrade;
   });

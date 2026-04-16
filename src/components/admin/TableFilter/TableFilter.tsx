@@ -21,8 +21,10 @@ const FILTER_OPTIONS = {
   ],
   grade: [
     { value: "all", label: "전체" },
-    { value: "vip", label: "VIP" },
-    { value: "general", label: "일반" },
+    { value: "Gold", label: "Gold" },
+    { value: "Silver", label: "Silver" },
+    { value: "Bronze", label: "Bronze" },
+    { value: "Member", label: "Member" },
   ],
   attribute: [
     { value: "all", label: "전체" },
@@ -78,7 +80,7 @@ function FilterDropdown({
         <div className="absolute top-full mt-1 left-0 bg-white border border-gray-90 rounded-lg shadow-sm z-10 min-w-full overflow-hidden">
           {options.map((opt) => (
             <button
-              key={opt.value}
+              key={opt.label}
               className="w-full text-left px-4 py-2 text-body4 text-gray-400 hover:bg-gray-50 transition-colors"
               onClick={() => {
                 setSelected(opt.label);
