@@ -1,52 +1,72 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Table as VaporTable } from "@vapor-ui/core";
 import SideBar from "../../../components/admin/SideBar/SideBar";
 import UserDetailPanel from "../../../components/admin/UserDetailPanel/UserDetailPanel";
 import { fetchAdminMe } from "../../../services/dashboard";
 import {
   fetchManagedMembers,
-  updateManagedMember,
+  updateMemberStatus,
+  updateMemberGrade,
   type ManagedMember,
 } from "../../../services/memberManagement";
-import type { AdminUser } from "../../../types/DashBoardPage.types";
 
-const TABLE_HEADINGS = ["번호", "이름", "이메일"] as const;
+const TABLE_HEADINGS = ["회원ID", "이름", "이메일", "등급", "상태"] as const;
 
-// 회원 관리 페이지 컴포넌트
 export default function MemberManagementPage() {
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const [members, setMembers] = useState<ManagedMember[]>([]);
+  // 선택한 회원 (상세 패널에 표시)
   const [selected, setSelected] = useState<ManagedMember | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // 본인 정보와 회원 목록 조회
-  useEffect(() => {
-    fetchAdminMe()
-      .then(setUser)
-      .catch(() => {});
-    fetchManagedMembers()
-      .then(setMembers)
-      .catch(() => {});
-  }, []);
+  // 사이드바에 표시할 관리자 기본 정보 (GET /api/v1/admin/me)
+  const { data: user } = useQuery({
+    queryKey: ["adminMe"],
+    queryFn: fetchAdminMe,
+  });
 
-  // 상세 패널 열고 닫기
+  // 회원 목록 (GET /api/v1/root/accounts/users)
+  const { data: members = [], isLoading } = useQuery({
+    queryKey: ["managedMembers"],
+    queryFn: fetchManagedMembers,
+  });
+
+  const queryClient = useQueryClient();
+
+  /**
+   * 회원 정보 수정 mutation
+   * - 상태 변경: PATCH /api/v1/admin/users/{user_id}/status
+   * - 등급 변경: PATCH /api/v1/root/accounts/{user_id}/grade
+   * 각각 별도 API이므로 변경된 항목만 호출
+   */
+  const { mutateAsync: saveMember } = useMutation({
+    mutationFn: async ({
+      user_id,
+      payload,
+    }: {
+      user_id: number;
+      payload: { grade?: string; status?: string };
+    }) => {
+      if (payload.status) await updateMemberStatus(user_id, payload.status);
+      if (payload.grade) await updateMemberGrade(user_id, payload.grade);
+    },
+    onSuccess: () => {
+      // 저장 성공 시 회원 목록 캐시 무효화해 최신 상태 자동 재조회
+      queryClient.invalidateQueries({ queryKey: ["managedMembers"] });
+    },
+  });
+
+  // 테이블 행 클릭 → 상세 패널 열기
   function handleRowClick(member: ManagedMember) {
     setSelected(member);
     setIsPanelOpen(true);
   }
 
-  // 회원 정보 저장
+  // 상세 패널에서 저장 버튼 클릭
   async function handleSave(
-    id: string,
-    payload: Partial<
-      Pick<ManagedMember, "grade" | "status" | "address" | "phone">
-    >,
+    user_id: number,
+    payload: { grade?: string; status?: string },
   ) {
-    await updateManagedMember(id, payload);
-    setMembers((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, ...payload } : m)),
-    );
-    setSelected((prev) => (prev?.id === id ? { ...prev, ...payload } : prev));
+    await saveMember({ user_id, payload });
   }
 
   return (
@@ -67,49 +87,61 @@ export default function MemberManagementPage() {
           </p>
         </div>
 
-        {/* 테이블 */}
-        <div className="border border-gray-90 rounded-lg overflow-hidden">
-          <VaporTable.Root $css={{ width: "100%", borderCollapse: "collapse" }}>
-            <VaporTable.Header className="bg-gray-50">
-              <VaporTable.Row>
-                {TABLE_HEADINGS.map((heading) => (
-                  <VaporTable.Heading
-                    key={heading}
-                    className="text-body3 text-gray-300 px-4 py-3 text-left"
-                  >
-                    {heading}
-                  </VaporTable.Heading>
-                ))}
-              </VaporTable.Row>
-            </VaporTable.Header>
-            <VaporTable.Body>
-              {members.map((member) => (
-                <VaporTable.Row
-                  key={member.id}
-                  className={`border-t border-gray-90 cursor-pointer transition-colors ${
-                    selected?.id === member.id && isPanelOpen
-                      ? "bg-semantic-blueSoft"
-                      : "hover:bg-gray-50"
-                  }`}
-                  onClick={() => handleRowClick(member)}
-                >
-                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                    {member.id}
-                  </VaporTable.Cell>
-                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                    {member.name}
-                  </VaporTable.Cell>
-                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                    {member.email}
-                  </VaporTable.Cell>
+        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {isLoading ? (
+          <p className="text-body4 text-gray-300">불러오는 중...</p>
+        ) : (
+          <div className="border border-gray-90 rounded-lg overflow-hidden">
+            <VaporTable.Root
+              $css={{ width: "100%", borderCollapse: "collapse" }}
+            >
+              <VaporTable.Header className="bg-gray-50">
+                <VaporTable.Row>
+                  {TABLE_HEADINGS.map((heading) => (
+                    <VaporTable.Heading
+                      key={heading}
+                      className="text-body3 text-gray-300 px-4 py-3 text-left"
+                    >
+                      {heading}
+                    </VaporTable.Heading>
+                  ))}
                 </VaporTable.Row>
-              ))}
-            </VaporTable.Body>
-          </VaporTable.Root>
-        </div>
+              </VaporTable.Header>
+              <VaporTable.Body>
+                {members.map((member) => (
+                  <VaporTable.Row
+                    key={member.user_id} // 실제 API: id가 아닌 user_id
+                    className={`border-t border-gray-90 cursor-pointer transition-colors ${
+                      selected?.user_id === member.user_id && isPanelOpen
+                        ? "bg-semantic-blueSoft"
+                        : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => handleRowClick(member)}
+                  >
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {member.user_id}
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {member.name}
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {member.email}
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {member.grade}
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {member.status}
+                    </VaporTable.Cell>
+                  </VaporTable.Row>
+                ))}
+              </VaporTable.Body>
+            </VaporTable.Root>
+          </div>
+        )}
       </main>
 
-      {/* 우측 슬라이드 드로어 */}
+      {/* 우측 슬라이드 패널 */}
       {selected && (
         <UserDetailPanel
           variant="member"

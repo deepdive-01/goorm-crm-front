@@ -1,23 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { CaretDownIcon, CloseOutlineIcon, UserIcon } from "@vapor-ui/icons";
-import { TextInput } from "@vapor-ui/core";
 import type { ManagedMember } from "../../../services/memberManagement";
 import type { ManagedAdmin } from "../../../services/adminManagement";
 import type { SelectDropdownProps } from "../../../types/userDetailPanel.types";
 import {
-  PROVINCES,
   MEMBER_GRADES,
-  ADMIN_GRADES,
+  ADMIN_ROLES,
 } from "../../../types/userDetailPanel.types";
-
-// 주소 파싱
-function parseAddress(address: string) {
-  const parts = address.split(" ");
-  return {
-    province: parts[0] ?? "",
-    detail: parts.slice(1).join(" "),
-  };
-}
 
 // 선택 드롭다운
 function SelectDropdown({
@@ -96,7 +85,6 @@ function Field({
   );
 }
 
-// ─── 상태 배지 ────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
   const isActive = status === "ACTIVE";
   return (
@@ -112,100 +100,96 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// member variant: user_id(number) 기반, grade/status 변경 가능
+// address/phone 수정은 실제 API 없으므로 미지원
 interface MemberPanelProps {
   variant: "member";
   data: ManagedMember;
   isOpen: boolean;
   onClose: () => void;
   onSave: (
-    id: string,
-    payload: Partial<
-      Pick<ManagedMember, "grade" | "status" | "address" | "phone">
-    >,
+    user_id: number,
+    payload: { grade?: string; status?: string },
   ) => void;
 }
 
+// admin variant: user_id(number) 기반, role 변경만 가능 (phone 수정 API 없음)
 interface AdminPanelProps {
   variant: "admin";
   data: ManagedAdmin;
   isOpen: boolean;
   onClose: () => void;
   onSave: (
-    id: string,
-    payload: Partial<Pick<ManagedAdmin, "grade" | "phone">>,
+    user_id: number,
+    payload: { role?: string },
   ) => void;
 }
 
 export type UserDetailPanelProps = MemberPanelProps | AdminPanelProps;
 
-// ─── 메인 컴포넌트 ────────────────────────────────────────
 export default function UserDetailPanel(props: UserDetailPanelProps) {
   const { variant, data, isOpen, onClose, onSave } = props;
 
   const isMember = variant === "member";
   const memberData = isMember ? (data as ManagedMember) : null;
+  const adminData = !isMember ? (data as ManagedAdmin) : null;
 
-  const parsed = memberData
-    ? parseAddress(memberData.address)
-    : { province: "", detail: "" };
-
-  const [phone, setPhone] = useState(data.phone);
-  const [grade, setGrade] = useState(data.grade);
-  const [province, setProvince] = useState(parsed.province);
-  const [detail, setDetail] = useState(parsed.detail);
+  // member: grade/status 상태 (address/phone 수정 API 없음)
+  const [grade, setGrade] = useState(memberData?.grade ?? "");
   const [status, setStatus] = useState(memberData?.status ?? "ACTIVE");
 
+  // admin: role 상태 (권한 변경에 사용)
+  const [role, setRole] = useState(adminData?.role ?? "ADMIN");
+
   // 선택 대상이 바뀌면 폼 초기화
+  // member/admin 모두 user_id 기준으로 리셋
+  const entityKey = (data as ManagedMember).user_id ?? (data as ManagedAdmin).user_id;
+
   useEffect(() => {
-    const p = memberData
-      ? parseAddress(memberData.address)
-      : { province: "", detail: "" };
-    setPhone(data.phone);
-    setGrade(data.grade);
-    setProvince(p.province);
-    setDetail(p.detail);
+    setGrade(memberData?.grade ?? "");
     setStatus(memberData?.status ?? "ACTIVE");
+    setRole(adminData?.role ?? "ADMIN");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.id]);
+  }, [entityKey]);
 
   function handleSave() {
     if (isMember) {
-      (onSave as MemberPanelProps["onSave"])(data.id, {
+      // member: grade/status 전달 (address/phone 수정 API 없음)
+      (onSave as MemberPanelProps["onSave"])((data as ManagedMember).user_id, {
         grade,
         status,
-        address: `${province} ${detail}`.trim(),
-        phone,
       });
     } else {
-      (onSave as AdminPanelProps["onSave"])(data.id, { grade, phone });
+      // admin: role만 전달
+      (onSave as AdminPanelProps["onSave"])((data as ManagedAdmin).user_id, {
+        role,
+      });
     }
     onClose();
   }
 
   function handleDeactivate() {
     if (isMember) {
-      (onSave as MemberPanelProps["onSave"])(data.id, {
-        status: status === "ACTIVE" ? "DORMANT" : "ACTIVE",
+      // 실제 API 상태값: "ACTIVE" | "BANNED"
+      const nextStatus = status === "ACTIVE" ? "BANNED" : "ACTIVE";
+      (onSave as MemberPanelProps["onSave"])((data as ManagedMember).user_id, {
+        status: nextStatus,
       });
-      setStatus((s) => (s === "ACTIVE" ? "DORMANT" : "ACTIVE"));
+      setStatus(nextStatus);
     }
   }
 
   const panelTitle = isMember ? "사용자 정보 수정" : "관리자 정보 수정";
   const panelSubtitle = isMember
     ? "회원의 정보를 수정할 수 있습니다"
-    : "관리자의 정보를 수정할 수 있습니다";
-  const gradeOptions = isMember ? MEMBER_GRADES : ADMIN_GRADES;
-  const gradeLabel = isMember ? "등급" : "권한";
+    : "관리자의 권한을 변경할 수 있습니다";
 
   return (
     <>
-      {/* 백드롭 */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
       )}
 
-      {/* 드로어 패널 */}
       <div
         className={`fixed right-0 top-0 h-full w-[420px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
@@ -233,7 +217,7 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
               </button>
             </div>
 
-            {/* 유저 정보 */}
+            {/* 유저 정보 요약 */}
             <div className="flex items-center gap-3 px-6 py-4">
               <div className="w-10 h-10 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
                 <UserIcon size={20} className="text-primary-500" />
@@ -246,6 +230,7 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
                   {data.email}
                 </p>
               </div>
+              {/* 비활성화 버튼은 member variant에서만 노출 */}
               {isMember && (
                 <button
                   type="button"
@@ -267,40 +252,34 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
                 </div>
               </Field>
 
+              {/* member 전용: 상태/등급 (address/phone 수정 API 없음) */}
               {isMember && (
                 <>
-                  <Field label="상세주소" required>
-                    <TextInput
-                      value={detail}
-                      onValueChange={setDetail}
-                      className="text-body4 p-2"
+                  <Field label="상태" required>
+                    <StatusBadge status={status} />
+                  </Field>
+                  <Field label="등급" required>
+                    <SelectDropdown
+                      value={grade}
+                      options={MEMBER_GRADES}
+                      onChange={setGrade}
+                      primary
                     />
                   </Field>
                 </>
               )}
 
-              <Field label="연락처" required>
-                <TextInput
-                  value={phone}
-                  onValueChange={setPhone}
-                  className="text-body4 p-2"
-                />
-              </Field>
-
-              {isMember && (
-                <Field label="상태" required>
-                  <StatusBadge status={status} />
+              {/* admin 전용: 권한(role) 변경 — PATCH /api/v1/root/accounts/{user_id}/role */}
+              {!isMember && (
+                <Field label="권한" required>
+                  <SelectDropdown
+                    value={role}
+                    options={ADMIN_ROLES}
+                    onChange={setRole}
+                    primary
+                  />
                 </Field>
               )}
-
-              <Field label={gradeLabel} required>
-                <SelectDropdown
-                  value={grade}
-                  options={gradeOptions}
-                  onChange={setGrade}
-                  primary
-                />
-              </Field>
 
               <Field label="가입일">
                 <div className="border border-gray-90 rounded-lg px-3 py-2.5 text-body4 text-gray-300 bg-gray-50">

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Table as VaporTable } from "@vapor-ui/core";
 import SideBar from "../../../components/admin/SideBar/SideBar";
 import GradeDetailPanel from "../../../components/admin/GradeDetailPanel/GradeDetailPanel";
@@ -9,42 +10,53 @@ import {
   type Grade,
   type UpdateGradePayload,
 } from "../../../services/gradeManagement";
-import type { AdminUser } from "../../../types/DashBoardPage.types";
 
-// 테이블 헤더
-const TABLE_HEADINGS = ["ID", "등급", "회원 수"] as const;
+// 실제 API에 member_count가 없으므로 "회원 수" 컬럼 제거
+const TABLE_HEADINGS = ["ID", "등급명", "최소 구매금액", "할인율", "무료배송"] as const;
 
 export default function GradeManagementPage() {
-  const [user, setUser] = useState<AdminUser | null>(null); // 로그인 유저 정보
-  const [grades, setGrades] = useState<Grade[]>([]); //등급 목록
-  const [selected, setSelected] = useState<Grade | null>(null); // 선택 등급
-  const [isPanelOpen, setIsPanelOpen] = useState(false); // 패널 열림 여부
+  // 선택한 등급 (상세 패널에 표시)
+  const [selected, setSelected] = useState<Grade | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // 데이터 로딩
-  useEffect(() => {
-    fetchAdminMe()
-      .then(setUser)
-      .catch(() => {});
-    fetchGrades()
-      .then(setGrades)
-      .catch(() => {});
-  }, []);
+  // 사이드바에 표시할 관리자 기본 정보 (GET /api/v1/admin/me)
+  const { data: user } = useQuery({
+    queryKey: ["adminMe"],
+    queryFn: fetchAdminMe,
+  });
 
-  // 패널 열기
+  // 등급 목록 (GET /api/v1/root/grades)
+  const { data: grades = [], isLoading } = useQuery({
+    queryKey: ["grades"],
+    queryFn: fetchGrades,
+  });
+
+  const queryClient = useQueryClient();
+
+  // 등급 혜택 수정 (PATCH /api/v1/root/grades/{grade_id})
+  const { mutateAsync: saveGrade } = useMutation({
+    mutationFn: ({
+      grade_id,
+      payload,
+    }: {
+      grade_id: number;
+      payload: UpdateGradePayload;
+    }) => updateGrade(grade_id, payload),
+    onSuccess: () => {
+      // 저장 성공 시 등급 목록 + 대시보드 캐시 무효화해 최신 상태 유지
+      queryClient.invalidateQueries({ queryKey: ["grades"] });
+    },
+  });
+
+  // 테이블 행 클릭 → 상세 패널 열기
   function handleRowClick(grade: Grade) {
     setSelected(grade);
     setIsPanelOpen(true);
   }
 
-  // 등급 정보 업데이트
+  // 상세 패널에서 저장 버튼 클릭
   async function handleSave(grade_id: number, payload: UpdateGradePayload) {
-    await updateGrade(grade_id, payload);
-    setGrades((prev) =>
-      prev.map((g) => (g.grade_id === grade_id ? { ...g, ...payload } : g)),
-    );
-    setSelected((prev) =>
-      prev?.grade_id === grade_id ? { ...prev, ...payload } : prev,
-    );
+    await saveGrade({ grade_id, payload });
   }
 
   return (
@@ -65,49 +77,60 @@ export default function GradeManagementPage() {
           </p>
         </div>
 
-        {/* 테이블 */}
-        <div className="border border-gray-90 rounded-lg overflow-hidden">
-          <VaporTable.Root $css={{ width: "100%", borderCollapse: "collapse" }}>
-            <VaporTable.Header className="bg-gray-50">
-              <VaporTable.Row>
-                {TABLE_HEADINGS.map((heading) => (
-                  <VaporTable.Heading
-                    key={heading}
-                    className="text-body3 text-gray-300 px-4 py-3 text-left"
-                  >
-                    {heading}
-                  </VaporTable.Heading>
-                ))}
-              </VaporTable.Row>
-            </VaporTable.Header>
-            <VaporTable.Body>
-              {grades.map((grade) => (
-                <VaporTable.Row
-                  key={grade.grade_id}
-                  className={`border-t border-gray-90 cursor-pointer transition-colors ${
-                    selected?.grade_id === grade.grade_id && isPanelOpen
-                      ? "bg-semantic-blueSoft"
-                      : "hover:bg-gray-50"
-                  }`}
-                  onClick={() => handleRowClick(grade)}
-                >
-                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                    {grade.grade_id}
-                  </VaporTable.Cell>
-                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                    {grade.name}
-                  </VaporTable.Cell>
-                  <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
-                    {grade.member_count.toLocaleString()}명
-                  </VaporTable.Cell>
+        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {isLoading ? (
+          <p className="text-body4 text-gray-300">불러오는 중...</p>
+        ) : (
+          <div className="border border-gray-90 rounded-lg overflow-hidden">
+            <VaporTable.Root
+              $css={{ width: "100%", borderCollapse: "collapse" }}
+            >
+              <VaporTable.Header className="bg-gray-50">
+                <VaporTable.Row>
+                  {TABLE_HEADINGS.map((heading) => (
+                    <VaporTable.Heading
+                      key={heading}
+                      className="text-body3 text-gray-300 px-4 py-3 text-left"
+                    >
+                      {heading}
+                    </VaporTable.Heading>
+                  ))}
                 </VaporTable.Row>
-              ))}
-            </VaporTable.Body>
-          </VaporTable.Root>
-        </div>
+              </VaporTable.Header>
+              <VaporTable.Body>
+                {grades.map((grade) => (
+                  <VaporTable.Row
+                    key={grade.grade_id}
+                    className={`border-t border-gray-90 cursor-pointer transition-colors ${
+                      selected?.grade_id === grade.grade_id && isPanelOpen
+                        ? "bg-semantic-blueSoft"
+                        : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => handleRowClick(grade)}
+                  >
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {grade.grade_id}
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {grade.name}
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {grade.min_purchase_amount.toLocaleString()}원
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {grade.discount_rate}%
+                    </VaporTable.Cell>
+                    <VaporTable.Cell className="text-body4 text-gray-400 px-4 py-3">
+                      {grade.is_free_shipping ? "✓" : "-"}
+                    </VaporTable.Cell>
+                  </VaporTable.Row>
+                ))}
+              </VaporTable.Body>
+            </VaporTable.Root>
+          </div>
+        )}
 
-        {/* 등급 추가 링크 */}
-        {/* API가 생기면 추가할 예정입니다. */}
+        {/* 등급 추가 — API 명세에 없으므로 추후 추가 예정 */}
         <button
           type="button"
           className="text-body4 text-primary-500 hover:text-primary-400 transition-colors text-left w-fit"

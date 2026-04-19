@@ -27,5 +27,7 @@ export const PROVINCES = [
   "제주",
 ] as const;
 
-export const MEMBER_GRADES = ["Member", "Bronze", "Silver", "Gold"] as const;
-export const ADMIN_GRADES = ["Root", "일반"] as const;
+// 실제 API 등급 값 (대문자)
+export const MEMBER_GRADES = ["MEMBER", "BRONZE", "SILVER", "GOLD"] as const;
+// 관리자 권한 변경 옵션 — PATCH /api/v1/root/accounts/{user_id}/role
+export const ADMIN_ROLES = ["ADMIN", "ROOT"] as const;

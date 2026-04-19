@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserIcon } from "@vapor-ui/icons";
 import { VStack } from "@vapor-ui/core";
 import SideBar from "../../../components/admin/SideBar/SideBar";
 import Edit from "../../../components/user/Edit/Edit";
 import { fetchAdminMe, updateAdminMe } from "../../../services/dashboard";
-import type { AdminProfile } from "../../../types/DashBoardPage.types";
 
 // 편집 불가 정보
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -21,18 +20,27 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function AdminMyPage() {
-  const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchAdminMe()
-      .then(setProfile)
-      .catch(() => {});
-  }, []);
+  // 관리자 본인 정보 (GET /api/v1/admin/me)
+  const { data: profile } = useQuery({
+    queryKey: ["adminMe"],
+    queryFn: fetchAdminMe,
+  });
+
+  // 이름/전화번호 수정 (PATCH /api/v1/admin/me)
+  const { mutateAsync: saveProfile } = useMutation({
+    mutationFn: (payload: { name?: string; phone?: string }) =>
+      updateAdminMe(payload),
+    onSuccess: () => {
+      // 저장 성공 시 캐시 무효화해 최신 정보 자동 재조회
+      queryClient.invalidateQueries({ queryKey: ["adminMe"] });
+    },
+  });
 
   function handleConfirm(field: "name" | "phone") {
     return async (value: string) => {
-      await updateAdminMe({ [field]: value });
-      setProfile((prev) => (prev ? { ...prev, [field]: value } : prev));
+      await saveProfile({ [field]: value });
     };
   }
 
