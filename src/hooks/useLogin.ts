@@ -48,9 +48,16 @@ export function useLogin() {
     if (!email || !isValidEmail) return;
 
     try {
-      await login(email, password);
-      // 로그인 성공 시 홈으로 이동
-      navigate("/");
+      const result = await login(email, password);
+      const { access_token, role } = result.data;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("role", role);
+
+      if (role === "ADMIN" || role === "ROOT") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error: unknown) {
       // 서버 응답 에러 메시지 우선 표시, 없으면 기본 메시지
       const err = error as { response?: { data?: { message?: string } } };
