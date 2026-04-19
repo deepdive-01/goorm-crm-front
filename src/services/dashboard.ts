@@ -5,7 +5,6 @@ export async function fetchAdminMe() {
   return res.data.data;
 }
 
-// 관리자 개인정보 수정 API
 export async function updateAdminMe(payload: {
   name?: string;
   phone?: string;
@@ -13,7 +12,12 @@ export async function updateAdminMe(payload: {
   await api.patch("/api/v1/admin/me", payload);
 }
 
-export async function fetchDashboardStats() {
-  const res = await api.get("/api/v1/admin/dashboard");
+export async function fetchMemberList() {
+  const res = await api.get("/api/v1/admin/users");
+  return res.data.data;
+}
+
+export async function fetchAdminList() {
+  const res = await api.get("/api/v1/root/accounts/admins");
   return res.data.data;
 }

@@ -1,115 +1,156 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import DashBoard from "../../../components/admin/DashBoard/DashBoard";
 import SideBar from "../../../components/admin/SideBar/SideBar";
-import { fetchAdminMe, fetchDashboardStats } from "../../../services/dashboard";
+// 대시보드 카드 데이터 API
+import {
+  fetchAdminMe,
+  fetchMemberList,
+  fetchAdminList,
+} from "../../../services/dashboard";
+
+// 등급 관리 API (카드 3에서 할인율, 무료배송 혜택 정보 조회용)
+import { fetchGrades } from "../../../services/gradeManagement";
 import type { DashBoardProps } from "../../../types/dashBoard.types";
 import type {
-  AdminUser,
-  DashboardStats,
+  MemberListResponse,
+  AdminListResponse,
 } from "../../../types/DashBoardPage.types";
+import type { Grade } from "../../../services/gradeManagement";
 
-// 카드 생성 함수
-function buildCards(stats: DashboardStats): DashBoardProps[] {
-  // API 응답에서 필요한 데이터 추출
-  const { member_list, member_management, admin_management, grade_management } =
-    stats;
+function buildCards(
+  members: MemberListResponse,
+  admins: AdminListResponse,
+  grades: Grade[],
+): DashBoardProps[] {
+  // 첫 페이지 content에서 상태별 회원 수 집계
+  const activeCount = members.content.filter(
+    (m) => m.status === "ACTIVE",
+  ).length;
+  const bannedCount = members.content.filter(
+    (m) => m.status === "BANNED",
+  ).length;
 
-  // 최근 활동 날짜를 한국어 형식으로 변환
-  const lastActive = new Date(
-    admin_management.last_active_at,
-  ).toLocaleDateString("ko-KR");
+  // 첫 페이지 content에서 등급별 회원 수 집계
+  const goldCount = members.content.filter((m) => m.grade === "GOLD").length;
+  const silverCount = members.content.filter(
+    (m) => m.grade === "SILVER",
+  ).length;
+  const bronzeCount = members.content.filter(
+    (m) => m.grade === "BRONZE",
+  ).length;
+
+  // 무료배송 혜택이 있는 등급 수 (is_free_shipping: true)
+  const freeShippingCount = grades.filter((g) => g.is_free_shipping).length;
 
   return [
+    // 전체 회원 수 + 상태
     {
       dashBoardImage: "/admin/DashBoard/MemberList.svg",
       color: "blue",
       mainTitle: "회원 목록",
-      mainValue: member_list.total_count,
+      mainValue: members.total_elements, // 서버에서 내려주는 전체 회원 수
       mainValueVariant: "명",
-      firstTitle: "이번 달 신규가입",
-      firstValue: member_list.new_this_month,
+      firstTitle: "전체 페이지",
+      firstValue: members.total_pages,
       secondTitle: "활성 회원",
-      secondValue: member_list.active_count,
-      thirdTitle: "휴면 회원",
-      thirdValue: member_list.dormant_count,
+      secondValue: activeCount, // 현재 페이지 기준
+      thirdTitle: "차단 회원",
+      thirdValue: bannedCount, // 현재 페이지 기준
       routeButton: "상세보기 →",
       route: "/admin/members",
     },
-    {
-      dashBoardImage: "/admin/DashBoard/MemberManagement.svg",
-      color: "green",
-      mainTitle: "회원 관리",
-      mainValue: member_management.total_count,
-      mainValueVariant: "건",
-      firstTitle: "등급 상승",
-      firstValue: member_management.grade_upgraded,
-      secondTitle: "등급 하락",
-      secondValue: member_management.grade_downgraded,
-      thirdTitle: "탈퇴 요청",
-      thirdValue: member_management.withdrawal_requested,
-      routeButton: "상세보기 →",
-      route: "/admin/member-management",
-    },
+    // 관리자 현황
     {
       dashBoardImage: "/admin/DashBoard/Admin.svg",
       color: "purple",
-      mainTitle: "관리자 관리",
-      mainValue: admin_management.total_count,
+      mainTitle: "관리자 현황",
+      mainValue: admins.total_elements, // 전체 관리자 수
       mainValueVariant: "명",
-      firstTitle: "Root 관리자",
-      firstValue: admin_management.root_admin_count,
-      secondTitle: "일반 관리자",
-      secondValue: admin_management.general_admin_count,
-      thirdTitle: "최근 활동",
-      thirdValue: lastActive,
+      firstTitle: "전체 페이지",
+      firstValue: admins.total_pages,
+      secondTitle: "등록 관리자",
+      secondValue: admins.total_elements,
+      thirdTitle: "-",
+      thirdValue: "-", // Root/일반 관리자 구분 API 없음
       routeButton: "상세보기 →",
       route: "/admin/admin-management",
     },
+    // 등급 관련
     {
       dashBoardImage: "/admin/DashBoard/Rank.svg",
       color: "orange",
       mainTitle: "등급 관리",
-      mainValue: grade_management.total_grade_count,
+      mainValue: grades.length, // 전체 등급 종류 수
       mainValueVariant: "개",
-      firstTitle: "VIP 등급",
-      firstValue: grade_management.vip_member_count,
-      secondTitle: "일반 등급",
-      secondValue: grade_management.general_member_count,
-      thirdTitle: "최근 등급 상승",
-      thirdValue: grade_management.recent_grade_upgraded,
+      firstTitle: grades[0]?.name ?? "-", // 첫 번째 등급 이름 (없으면 "-")
+      firstValue: `${grades[0]?.discount_rate ?? 0}%`,
+      secondTitle: grades[1]?.name ?? "-", // 두 번째 등급 이름
+      secondValue: `${grades[1]?.discount_rate ?? 0}%`,
+      thirdTitle: "무료배송 등급",
+      thirdValue: freeShippingCount,
       routeButton: "상세보기 →",
       route: "/admin/grades",
+    },
+
+    // 등급 분포
+    {
+      dashBoardImage: "/admin/DashBoard/MemberManagement.svg",
+      color: "green",
+      mainTitle: "회원 등급 분포",
+      mainValue: members.total_elements,
+      mainValueVariant: "명",
+      firstTitle: "GOLD",
+      firstValue: goldCount, // 현재 페이지 기준
+      secondTitle: "SILVER",
+      secondValue: silverCount,
+      thirdTitle: "BRONZE",
+      thirdValue: bronzeCount,
+      routeButton: "상세보기 →",
+      route: "/admin/member-management",
     },
   ];
 }
 
 export default function DashBoardPage() {
-  // API 응답 데이터 상태 관리
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  // 사이드바에 표시할 관리자 기본 정보
+  const { data: user } = useQuery({
+    queryKey: ["adminMe"],
+    queryFn: fetchAdminMe,
+  });
 
-  // 컴포넌트 마운트 시 관리자 정보와 대시보드 통계 데이터를 API에서 가져옴
-  useEffect(() => {
-    fetchAdminMe()
-      .then(setUser)
-      .catch(() => {});
-    fetchDashboardStats()
-      .then(setStats)
-      .catch(() => {});
-  }, [setUser, setStats]); // setUser와 setStats가 변경 될 때마다 다시 실행
+  // 회원 목록
+  const { data: members, isLoading: isMembersLoading } = useQuery({
+    queryKey: ["memberList"],
+    queryFn: fetchMemberList,
+  });
 
-  const cards = stats ? buildCards(stats) : []; // stats가 존재할 때 카드 데이터 생성, 없으면 빈 배열
+  // 관리자 목록
+  const { data: admins, isLoading: isAdminsLoading } = useQuery({
+    queryKey: ["adminList"],
+    queryFn: fetchAdminList,
+  });
+
+  // 등급 목록
+  const { data: grades = [], isLoading: isGradesLoading } = useQuery({
+    queryKey: ["grades"],
+    queryFn: fetchGrades,
+  });
+
+  // 3개 핵심 데이터 중 하나라도 로딩 중이면 로딩 상태로 처리
+  const isLoading = isMembersLoading || isAdminsLoading || isGradesLoading;
+  const cards =
+    members && admins && grades.length > 0
+      ? buildCards(members, admins, grades)
+      : [];
 
   return (
     <div className="flex min-h-screen">
-      {/* 사이드바 */}
       <SideBar
         userName={user?.name ?? "관리자"}
         roleName={user?.role ?? "관리자"}
         roleLabel={user?.name ?? "관리자"}
       />
 
-      {/* 메인 컨텐츠 영역 */}
       <main className="flex-1 p-5 flex flex-col items-center">
         <div className="w-fit flex flex-col gap-4">
           <div className="flex flex-col gap-2">
@@ -119,14 +160,15 @@ export default function DashBoardPage() {
               관리자 시스템의 주요 지표를 확인해보세요
             </div>
           </div>
-          {stats ? (
+          {/* 모든 데이터 로드 완료 시 카드 그리드, 그 전에는 로딩 텍스트 표시 */}
+          {isLoading ? (
+            <p className="text-body4 text-gray-300">불러오는 중...</p>
+          ) : (
             <div className="grid grid-cols-2 gap-6">
               {cards.map((card) => (
                 <DashBoard key={card.mainTitle} {...card} />
               ))}
             </div>
-          ) : (
-            <p className="text-body4 text-gray-300">불러오는 중...</p>
           )}
         </div>
       </main>
