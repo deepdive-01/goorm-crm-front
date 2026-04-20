@@ -7,7 +7,7 @@ import App from "./App.tsx";
 import { UserProvider } from "./context/UserContext";
 
 async function enableMocking() {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCK !== "false") {
     const { worker } = await import("./mocks/browser");
     return worker.start({ onUnhandledRequest: "bypass" });
   }

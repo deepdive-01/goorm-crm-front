@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { publicApi as api } from "./api";
 
 export const sendVerificationEmail = async (email: string) => {
   const response = await api.post("/api/v1/auth/signup/email-verification", {

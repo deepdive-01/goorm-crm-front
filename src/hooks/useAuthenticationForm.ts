@@ -17,9 +17,12 @@ export function useAuthenticationForm({
   const [emailTouched, setEmailTouched] = useState(false);
   const [codeTouched, setCodeTouched] = useState(false);
   const [sendCodeError, setSendCodeError] = useState<string | null>(null);
+  const [codeSent, setCodeSent] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
     null,
   );
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const isValidEmail = validateEmail(email);
   const emailError =
@@ -34,6 +37,7 @@ export function useAuthenticationForm({
     setIsVerified(false);
     setSendCodeError(null);
     setVerificationError(null);
+    setCodeSent(false);
   };
 
   const codeError =
@@ -53,18 +57,24 @@ export function useAuthenticationForm({
   };
 
   const handleSendCode = async () => {
+    setIsSendingCode(true);
     try {
       setSendCodeError(null);
+      setCodeSent(false);
       await onSendCode(email);
+      setCodeSent(true);
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       setSendCodeError(
         err.response?.data?.message ?? "인증번호 발송에 실패했습니다.",
       );
+    } finally {
+      setIsSendingCode(false);
     }
   };
 
   const handleSubmit = async () => {
+    setIsVerifying(true);
     try {
       await onSubmit(email, code);
       setIsVerified(true);
@@ -75,6 +85,8 @@ export function useAuthenticationForm({
         err.response?.data?.message ?? "인증번호가 일치하지 않습니다.",
       );
       setIsVerified(false);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -83,6 +95,9 @@ export function useAuthenticationForm({
     code,
     isValidEmail,
     isVerified,
+    codeSent,
+    isSendingCode,
+    isVerifying,
     emailError,
     codeError,
     sendCodeError,

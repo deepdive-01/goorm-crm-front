@@ -12,38 +12,55 @@ import Grade from "./Grade/Grade";
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const { profile } = useUserContext();
+  const { profile, isLoading } = useUserContext();
 
   const recipient = profile?.name ?? "";
   const email = profile?.email ?? "";
   const phone = profile?.phone ?? "";
+  const role = profile?.role ?? "";
+
+  const isAdminOrRoot = role === "ADMIN" || role === "ROOT";
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
 
+  const hasToken = !!localStorage.getItem("access_token");
+  const authMenuItem = hasToken
+    ? { label: "로그아웃", onClick: handleLogout }
+    : {
+        label: "로그인",
+        onClick: () => {
+          window.location.href = "/login";
+        },
+      };
+
   return (
     <VStack $css={{ gap: "$500", alignItems: "center" }}>
       <Nav
         LogoTitle={{ LogoTitle: "Goorm", href: "/" }}
         items={[
-          { href: "/admin", label: "관리자 페이지" },
+          ...(isAdminOrRoot
+            ? [{ href: "/admin", label: "관리자 페이지" }]
+            : []),
           { href: "/myPage", label: "마이 페이지" },
         ]}
         avatarIcons={[
           {
             Icon: UserIcon,
             alt: "사용자",
-            menuItems: [
-              { label: "로그아웃", onClick: handleLogout }, // onClick → 함수 실행
-            ],
+            menuItems: [authMenuItem],
           },
         ]}
       />
 
       <VStack className="items-center w-full gap-12">
-        <MyPageTitle recipient={recipient} email={email} />
+        <MyPageTitle
+          recipient={recipient}
+          email={email}
+          isLoading={isLoading}
+        />
         <Tab
           defaultValue="profileEdit"
           listItem={[

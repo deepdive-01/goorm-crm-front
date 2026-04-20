@@ -25,13 +25,16 @@ interface UserContextValue {
   deleteAccount: (body: DeleteAccountRequest) => Promise<void>;
   // 캐시를 무효화하고 다시 fetch (로그인 직후 등에 사용)
   refetch: () => Promise<void>;
+  // 로그아웃 시 프로필 초기화
+  clearProfile: () => void;
 }
 
 const UserContext = createContext<UserContextValue | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // 초기값 true: 마운트 직후 fetch가 시작되기 전까지 로딩 중으로 간주
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // 이미 fetch가 진행 중이거나 완료됐는지 추적해 중복 호출 방지
@@ -102,6 +105,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     await fetchProfile();
   }, [fetchProfile]);
 
+  const clearProfile = useCallback(() => {
+    setProfile(null);
+    fetchedRef.current = false;
+  }, []);
+
   return (
     <UserContext.Provider
       value={{
@@ -111,6 +119,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         updateProfile: handleUpdateProfile,
         deleteAccount: handleDeleteAccount,
         refetch,
+        clearProfile,
       }}
     >
       {children}

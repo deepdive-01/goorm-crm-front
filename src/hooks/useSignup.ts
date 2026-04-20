@@ -19,6 +19,7 @@ export function useSignup() {
   );
   const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
   const [signupError, setSignupError] = useState<string | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const passwordMismatch =
     confirmPassword.length > 0 && password !== confirmPassword;
@@ -44,6 +45,7 @@ export function useSignup() {
       return;
     }
 
+    setIsRegistering(true);
     try {
       await registerUser({
         name,
@@ -59,6 +61,8 @@ export function useSignup() {
         err.response?.data?.message ??
           "회원가입에 실패했습니다. 다시 시도해주세요.",
       );
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -69,6 +73,7 @@ export function useSignup() {
     confirmPassword,
     passwordMismatch,
     signupError,
+    isRegistering,
     setName,
     setPhone,
     setPassword,
