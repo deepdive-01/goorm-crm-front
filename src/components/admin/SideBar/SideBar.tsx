@@ -12,39 +12,45 @@ import { useState } from "react";
 import { logout } from "../../../services/auth";
 import { useUserContext } from "../../../context/UserContext";
 
-// 네비게이션 아이템 정의: 경로, 레이블, 아이콘
+// 네비게이션 아이템 정의: 경로, 레이블, 아이콘, ROOT 전용 여부
 const NAV_ITEMS = [
   {
     path: "/admin/notifications",
     label: "알림",
     icon: "/admin/SideBar/BellOnOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin",
     label: "대시보드",
     icon: "/admin/SideBar/HomeOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/members",
     label: "회원 목록",
     icon: "/admin/SideBar/GroupOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/member-management",
     label: "회원 관리",
     icon: "/admin/SideBar/AssignmentOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/grade-management",
     label: "등급 관리",
     icon: "/admin/SideBar/CertificateOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/admin-management",
     label: "관리자 관리",
     icon: "/admin/SideBar/BuildOutlineIcon.svg",
+    rootOnly: true,
   },
-] as const;
+];
 
 const SIDEBAR_WIDTH = "w-64";
 
@@ -113,7 +119,9 @@ export default function SideBar({
           {/* 네비게이션 메뉴 */}
           {/* NAV_ITEMS를 불러와서 사이드바 아이템에 넣음 */}
           <nav className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1">
-            {NAV_ITEMS.map((item, index) => (
+            {NAV_ITEMS.filter(
+              (item) => !item.rootOnly || roleName === "ROOT",
+            ).map((item, index) => (
               <React.Fragment key={item.path}>
                 <SideBarItem
                   icon={item.icon}
