@@ -159,7 +159,7 @@ describe("Nav", () => {
     });
 
     it("menuItems가 없는 아이콘은 클릭해도 드롭다운이 열리지 않는다", async () => {
-      const user = userEvent.setup();
+      // const user = userEvent.setup();
       renderNav({
         avatarIcons: [{ Icon: MockBellIcon, alt: "알림" }],
       });
