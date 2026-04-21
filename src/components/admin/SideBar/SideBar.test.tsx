@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { MemoryRouter } from "react-router-dom";
+import { UserProvider } from "../../../context/UserContext";
 import SideBar from "./SideBar";
 
 const defaultProps = {
@@ -15,9 +16,11 @@ function renderSideBar(
   initialRoute = "/",
 ) {
   return render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <SideBar {...defaultProps} {...props} />
-    </MemoryRouter>,
+    <UserProvider>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <SideBar {...defaultProps} {...props} />
+      </MemoryRouter>
+    </UserProvider>,
   );
 }
 

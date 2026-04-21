@@ -1,16 +1,25 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../../../mocks/server";
+import { UserProvider } from "../../../context/UserContext";
 import MemberListPage from "./MemberListPage";
 
 function renderMemberListPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
-    <MemoryRouter>
-      <MemberListPage />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <MemoryRouter>
+          <MemberListPage />
+        </MemoryRouter>
+      </UserProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -120,11 +129,11 @@ describe("MemberListPage 필터 테스트", () => {
     renderMemberListPage();
     await user.click(screen.getByRole("button", { name: /상태/ }));
     expect(screen.getByRole("button", { name: "활성" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "휴면" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "차단" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "전체" })).toBeInTheDocument();
   });
 
-  it("상태 필터 '휴면' 선택 시 휴면 회원만 표시된다.", async () => {
+  it("상태 필터 '차단' 선택 시 차단 회원만 표시된다.", async () => {
     const user = userEvent.setup();
     renderMemberListPage();
     await waitFor(() => {
@@ -132,7 +141,7 @@ describe("MemberListPage 필터 테스트", () => {
     });
 
     await user.click(screen.getByRole("button", { name: /상태/ }));
-    await user.click(screen.getByRole("button", { name: "휴면" }));
+    await user.click(screen.getByRole("button", { name: "차단" }));
 
     await waitFor(() => {
       expect(screen.getByText("박지호")).toBeInTheDocument();

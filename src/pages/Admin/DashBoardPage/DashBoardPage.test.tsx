@@ -1,15 +1,24 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../../../mocks/server";
+import { UserProvider } from "../../../context/UserContext";
 import DashBoardPage from "./DashBoardPage";
 
 function renderDashBoardPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
-    <MemoryRouter>
-      <DashBoardPage />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <MemoryRouter>
+          <DashBoardPage />
+        </MemoryRouter>
+      </UserProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -29,10 +38,10 @@ describe("DashBoardPage 렌더링 테스트", () => {
   it("API 응답 후 대시보드 카드 4개가 렌더링된다.", async () => {
     renderDashBoardPage();
     await waitFor(() => {
-      expect(screen.getByText("회원 목록")).toBeInTheDocument();
-      expect(screen.getByText("회원 관리")).toBeInTheDocument();
-      expect(screen.getByText("관리자 관리")).toBeInTheDocument();
-      expect(screen.getByText("등급 관리")).toBeInTheDocument();
+      expect(screen.getAllByText("회원 목록").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("관리자 현황")).toBeInTheDocument();
+      expect(screen.getAllByText("등급 관리").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("회원 등급 분포")).toBeInTheDocument();
     });
   });
 
@@ -69,57 +78,27 @@ describe("DashBoardPage 유저 정보 테스트", () => {
 });
 
 describe("DashBoardPage 대시보드 통계 테스트", () => {
-  it("회원 목록 카드의 총 회원 수가 표시된다.", async () => {
+  it("회원 목록 카드의 총 회원 수(total_elements)가 표시된다.", async () => {
     renderDashBoardPage();
     await waitFor(() => {
-      expect(screen.getByText("1300")).toBeInTheDocument();
+      // members mock total_elements: 12
+      expect(screen.getAllByText("12").length).toBeGreaterThanOrEqual(1);
     });
   });
 
-  it("회원 관리 카드의 등급 하락 건수가 표시된다.", async () => {
+  it("관리자 현황 카드의 총 관리자 수(total_elements)가 표시된다.", async () => {
     renderDashBoardPage();
     await waitFor(() => {
-      expect(screen.getByText("12")).toBeInTheDocument();
-    });
-  });
-
-  it("관리자 관리 카드의 총 관리자 수가 표시된다.", async () => {
-    renderDashBoardPage();
-    await waitFor(() => {
-      expect(screen.getByText("10")).toBeInTheDocument();
+      // admins mock total_elements: 4
+      expect(screen.getAllByText("4").length).toBeGreaterThanOrEqual(1);
     });
   });
 
   it("등급 관리 카드의 총 등급 수가 표시된다.", async () => {
     renderDashBoardPage();
     await waitFor(() => {
-      expect(screen.getByText("5")).toBeInTheDocument();
-    });
-  });
-
-  it("각 카드의 세부 항목이 표시된다.", async () => {
-    renderDashBoardPage();
-    await waitFor(() => {
-      expect(screen.getByText("이번 달 신규가입")).toBeInTheDocument();
-      expect(screen.getByText("등급 상승")).toBeInTheDocument();
-      expect(screen.getByText("Root 관리자")).toBeInTheDocument();
-      expect(screen.getByText("VIP 등급")).toBeInTheDocument();
-    });
-  });
-
-  it("대시보드 통계 API 실패 시 카드 수치가 렌더링되지 않는다.", async () => {
-    server.use(
-      http.get("*/api/v1/admin/dashboard", () => {
-        return HttpResponse.json(
-          { code: "INTERNAL_SERVER_ERROR", message: "서버 오류입니다." },
-          { status: 500 },
-        );
-      }),
-    );
-    renderDashBoardPage();
-    await waitFor(() => {
-      expect(screen.queryByText("1300")).not.toBeInTheDocument();
-      expect(screen.queryByText("888")).not.toBeInTheDocument();
+      // grades mock has 4 grades
+      expect(screen.getAllByText("4").length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -128,6 +107,21 @@ describe("DashBoardPage 대시보드 통계 테스트", () => {
     await waitFor(() => {
       const buttons = screen.getAllByText("상세보기 →");
       expect(buttons).toHaveLength(4);
+    });
+  });
+
+  it("회원 목록 API 실패 시 카드가 렌더링되지 않는다.", async () => {
+    server.use(
+      http.get("*/api/v1/admin/users", () => {
+        return HttpResponse.json(
+          { code: "INTERNAL_SERVER_ERROR", message: "서버 오류입니다." },
+          { status: 500 },
+        );
+      }),
+    );
+    renderDashBoardPage();
+    await waitFor(() => {
+      expect(screen.queryByText("관리자 현황")).not.toBeInTheDocument();
     });
   });
 });

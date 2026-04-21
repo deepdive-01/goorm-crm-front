@@ -1,16 +1,25 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../../../mocks/server";
+import { UserProvider } from "../../../context/UserContext";
 import MemberManagementPage from "./MemberManagementPage";
 
 function renderMemberManagementPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
-    <MemoryRouter>
-      <MemberManagementPage />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <MemoryRouter>
+          <MemberManagementPage />
+        </MemoryRouter>
+      </UserProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -28,12 +37,12 @@ describe("MemberManagementPage 렌더링 테스트", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("테이블 헤더 번호·이메일이 렌더링된다.", async () => {
+  it("테이블 헤더 회원ID·이메일이 렌더링된다.", async () => {
     renderMemberManagementPage();
     await waitFor(() => {
       expect(screen.getByText("김민준")).toBeInTheDocument();
     });
-    expect(document.body).toHaveTextContent("번호");
+    expect(document.body).toHaveTextContent("회원ID");
     expect(document.body).toHaveTextContent("이메일");
   });
 });
@@ -83,14 +92,14 @@ describe("MemberManagementPage 회원 목록 테스트", () => {
   it("회원 ID가 테이블에 표시된다.", async () => {
     renderMemberManagementPage();
     await waitFor(() => {
-      expect(screen.getByText("U001")).toBeInTheDocument();
-      expect(screen.getByText("U002")).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
     });
   });
 
   it("회원 목록 API 실패 시 회원 데이터가 표시되지 않는다.", async () => {
     server.use(
-      http.get("*/api/v1/admin/members/management", () => {
+      http.get("*/api/v1/root/accounts/users", () => {
         return HttpResponse.json(
           { code: "INTERNAL_SERVER_ERROR", message: "서버 오류입니다." },
           { status: 500 },

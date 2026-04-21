@@ -1,16 +1,25 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../../../mocks/server";
+import { UserProvider } from "../../../context/UserContext";
 import AdminManagementPage from "./AdminManagementPage";
 
 function renderAdminManagementPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
-    <MemoryRouter>
-      <AdminManagementPage />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <MemoryRouter>
+          <AdminManagementPage />
+        </MemoryRouter>
+      </UserProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -28,14 +37,15 @@ describe("AdminManagementPage 렌더링 테스트", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("테이블 헤더 3개가 렌더링된다.", async () => {
+  it("테이블 헤더 4개가 렌더링된다.", async () => {
     renderAdminManagementPage();
     await waitFor(() => {
       const headers = screen.getAllByRole("columnheader");
-      expect(headers).toHaveLength(3);
+      expect(headers).toHaveLength(4);
       expect(headers[0]).toHaveTextContent("관리자ID");
       expect(headers[1]).toHaveTextContent("이름");
       expect(headers[2]).toHaveTextContent("이메일");
+      expect(headers[3]).toHaveTextContent("권한");
     });
   });
 });
@@ -82,17 +92,17 @@ describe("AdminManagementPage 관리자 목록 테스트", () => {
     });
   });
 
-  it("관리자 ID가 테이블에 표시된다.", async () => {
+  it("관리자 ID(user_id)가 테이블에 표시된다.", async () => {
     renderAdminManagementPage();
     await waitFor(() => {
-      expect(screen.getByText("A001")).toBeInTheDocument();
-      expect(screen.getByText("A002")).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
     });
   });
 
   it("관리자 목록 API 실패 시 관리자 데이터가 표시되지 않는다.", async () => {
     server.use(
-      http.get("*/api/v1/admin/admins", () => {
+      http.get("*/api/v1/root/accounts/admins", () => {
         return HttpResponse.json(
           { code: "INTERNAL_SERVER_ERROR", message: "서버 오류입니다." },
           { status: 500 },
@@ -128,7 +138,7 @@ describe("AdminManagementPage 드로어 패널 테스트", () => {
 
     expect(screen.getByText("관리자 정보 수정")).toBeInTheDocument();
     expect(
-      screen.getByText("관리자의 정보를 수정할 수 있습니다"),
+      screen.getByText("관리자의 권한을 변경할 수 있습니다"),
     ).toBeInTheDocument();
   });
 

@@ -1,16 +1,25 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../../../mocks/server";
+import { UserProvider } from "../../../context/UserContext";
 import AdminMyPage from "./AdminMyPage";
 
 function renderAdminMyPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
-    <MemoryRouter>
-      <AdminMyPage />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <MemoryRouter>
+          <AdminMyPage />
+        </MemoryRouter>
+      </UserProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -154,6 +163,25 @@ describe("AdminMyPage 편집 테스트", () => {
     await waitFor(() => {
       expect(screen.getAllByText("운영팀장").length).toBeGreaterThanOrEqual(1);
     });
+
+    // GET 응답을 미리 오버라이드하여 mutation 후 재조회 시 새 이름이 반환되도록 함
+    server.use(
+      http.get("*/api/v1/admin/me", () => {
+        return HttpResponse.json({
+          status: 200,
+          code: "ADMIN_PROFILE_SUCCESS",
+          message: "관리자 프로필 정보를 조회했습니다.",
+          data: {
+            email: "admin@shop.com",
+            name: "이운영",
+            phone: "010-1111-2222",
+            grade: "BRONZE",
+            role: "ADMIN",
+            created_at: "2026-01-01T09:00:00Z",
+          },
+        });
+      }),
+    );
 
     await user.click(within(getNameRow()).getByRole("button"));
 
