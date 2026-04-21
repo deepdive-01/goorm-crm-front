@@ -46,12 +46,12 @@ const NAV_ITEMS = [
   },
 ] as const;
 
-const SIDEBAR_WIDTH = "w-64"; // 256px
+const SIDEBAR_WIDTH = "w-64";
 
 interface SideBarProps {
   userName: string;
-  roleName: string; // 역할 표시명 (예: "관리자")
-  roleLabel?: string; // 칩 우측 레이블 (생략 시 userName으로 표시)
+  roleName: string;
+  roleLabel?: string;
 }
 
 export default function SideBar({

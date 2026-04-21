@@ -11,11 +11,15 @@ import {
   type UpdateGradePayload,
 } from "../../../services/gradeManagement";
 
-// 실제 API에 member_count가 없으므로 "회원 수" 컬럼 제거
-const TABLE_HEADINGS = ["ID", "등급명", "최소 구매금액", "할인율", "무료배송"] as const;
+const TABLE_HEADINGS = [
+  "ID",
+  "등급명",
+  "최소 구매금액",
+  "할인율",
+  "무료배송",
+] as const;
 
 export default function GradeManagementPage() {
-  // 선택한 등급 (상세 패널에 표시)
   const [selected, setSelected] = useState<Grade | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 

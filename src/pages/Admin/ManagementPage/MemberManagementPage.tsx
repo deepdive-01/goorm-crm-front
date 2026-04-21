@@ -33,12 +33,6 @@ export default function MemberManagementPage() {
 
   const queryClient = useQueryClient();
 
-  /**
-   * 회원 정보 수정 mutation
-   * - 상태 변경: PATCH /api/v1/admin/users/{user_id}/status
-   * - 등급 변경: PATCH /api/v1/root/accounts/{user_id}/grade
-   * 각각 별도 API이므로 변경된 항목만 호출
-   */
   const { mutateAsync: saveMember } = useMutation({
     mutationFn: async ({
       user_id,

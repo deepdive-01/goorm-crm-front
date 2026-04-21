@@ -17,11 +17,11 @@ const FILTER_OPTIONS = {
   status: [
     { value: "all", label: "전체" },
     { value: "ACTIVE", label: "활성" }, // 실제 API: "ACTIVE"
-    { value: "BANNED", label: "차단" }, // 실제 API: "BANNED" (mock의 "휴면"과 다름)
+    { value: "BANNED", label: "차단" }, // 실제 API: "BANNED"
   ],
   grade: [
     { value: "all", label: "전체" },
-    { value: "GOLD", label: "Gold" },     // 실제 API: 대문자
+    { value: "GOLD", label: "Gold" },
     { value: "SILVER", label: "Silver" },
     { value: "BRONZE", label: "Bronze" },
     { value: "MEMBER", label: "Member" },

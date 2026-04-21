@@ -3,7 +3,6 @@ import { Pagination, Table as VaporTable } from "@vapor-ui/core";
 import type { MemberRow, TableProps } from "../../../types/table.types";
 
 export default function Table(props: TableProps) {
-  // 페이지네이션 설정, 기본 페이지 크기는 10으로 설정
   const { defaultPageSize = 10 } = props;
 
   // 현재 페이지 상태 관리

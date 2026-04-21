@@ -15,9 +15,7 @@ export function useSidebar(defaultOpen = true) {
   useEffect(() => {
     try {
       localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
-    } catch {
-      // localStorage 접근 불가 환경에서는 무시
-    }
+    } catch {}
   }, [isOpen]);
 
   const toggle = () => setIsOpen((prev) => !prev);

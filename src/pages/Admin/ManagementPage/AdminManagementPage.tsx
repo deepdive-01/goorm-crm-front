@@ -31,12 +31,6 @@ export default function AdminManagementPage() {
 
   const queryClient = useQueryClient();
 
-  /**
-   * useMutation: React Query의 데이터 변경(CUD) 훅
-   *
-   * - mutationFn : 실제 API 호출 함수
-   * - onSuccess  : 성공 시 실행. invalidateQueries로 목록을 다시 조회해 최신 상태 유지
-   */
   const { mutateAsync: saveAdmin } = useMutation({
     mutationFn: async ({
       user_id,
