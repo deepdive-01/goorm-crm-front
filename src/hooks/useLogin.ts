@@ -2,17 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { login } from "../services/auth";
+import { useUserContext } from "../context/UserContext";
 import { validateEmail } from "../utils/validateEmail";
 
 export function useLogin() {
   const navigate = useNavigate();
+  const { refetch } = useUserContext();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   // 이메일 필드에 한 번이라도 포커스가 벗어났는지 추적
   // touched 이전에는 에러를 표시하지 않아 초기 UX를 깔끔하게 유지
   const [emailTouched, setEmailTouched] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const isValidEmail = validateEmail(email);
 
@@ -47,17 +51,17 @@ export function useLogin() {
     setEmailTouched(true);
     if (!email || !isValidEmail) return;
 
+    setIsLoggingIn(true);
     try {
-      const result = await login(email, password);
-      const { access_token, role } = result.data;
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("role", role);
-
-      if (role === "ADMIN" || role === "ROOT") {
-        navigate("/admin");
-      } else {
-        navigate("/");
+      const result = await login(email, password, rememberMe);
+      // 응답 구조가 { data: { access_token } } 또는 { access_token } (flat) 두 가지일 수 있음
+      const token: string | undefined =
+        result?.data?.access_token ?? result?.access_token;
+      if (token) {
+        localStorage.setItem("access_token", token);
       }
+      await refetch();
+      navigate("/");
     } catch (error: unknown) {
       // 서버 응답 에러 메시지 우선 표시, 없으면 기본 메시지
       const err = error as { response?: { data?: { message?: string } } };
@@ -65,17 +69,22 @@ export function useLogin() {
         err.response?.data?.message ??
           "로그인에 실패했습니다. 다시 시도해주세요.",
       );
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
   return {
     email,
     password,
+    rememberMe,
     emailError,
     loginError,
+    isLoggingIn,
     handleEmailChange,
     handleEmailBlur,
     handlePasswordChange,
+    handleRememberMeChange: setRememberMe,
     handleLogin,
   };
 }

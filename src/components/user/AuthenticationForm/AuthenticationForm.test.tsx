@@ -198,6 +198,56 @@ describe("AuthenticationForm", () => {
     });
   });
 
+  describe("로딩 상태", () => {
+    it("인증번호 전송 중 버튼 텍스트가 '전송 중...'으로 바뀐다", async () => {
+      const onSendCode = vi
+        .fn()
+        .mockImplementation(() => new Promise(() => {}));
+      const user = userEvent.setup();
+      render(<AuthenticationForm {...defaultProps} onSendCode={onSendCode} />);
+      await user.type(screen.getByLabelText(/이메일/), "goorm01@goorm.com");
+      await user.click(screen.getByRole("button", { name: "인증번호 받기" }));
+      expect(
+        screen.getByRole("button", { name: /전송 중/ }),
+      ).toBeInTheDocument();
+    });
+
+    it("인증번호 전송 중 버튼이 비활성화된다", async () => {
+      const onSendCode = vi
+        .fn()
+        .mockImplementation(() => new Promise(() => {}));
+      const user = userEvent.setup();
+      render(<AuthenticationForm {...defaultProps} onSendCode={onSendCode} />);
+      await user.type(screen.getByLabelText(/이메일/), "goorm01@goorm.com");
+      await user.click(screen.getByRole("button", { name: "인증번호 받기" }));
+      expect(screen.getByRole("button", { name: /전송 중/ })).toBeDisabled();
+    });
+
+    it("인증 확인 중 버튼 텍스트가 '인증 중...'으로 바뀐다", async () => {
+      const onSubmit = vi.fn().mockImplementation(() => new Promise(() => {}));
+      const user = userEvent.setup();
+      render(
+        <AuthenticationForm {...defaultProps} onSubmit={onSubmit} showEndBtn />,
+      );
+      await user.type(screen.getByLabelText(/인증번호/), "123456");
+      await user.click(screen.getByRole("button", { name: "인증 완료" }));
+      expect(
+        screen.getByRole("button", { name: /인증 중/ }),
+      ).toBeInTheDocument();
+    });
+
+    it("인증 확인 중 버튼이 비활성화된다", async () => {
+      const onSubmit = vi.fn().mockImplementation(() => new Promise(() => {}));
+      const user = userEvent.setup();
+      render(
+        <AuthenticationForm {...defaultProps} onSubmit={onSubmit} showEndBtn />,
+      );
+      await user.type(screen.getByLabelText(/인증번호/), "123456");
+      await user.click(screen.getByRole("button", { name: "인증 완료" }));
+      expect(screen.getByRole("button", { name: /인증 중/ })).toBeDisabled();
+    });
+  });
+
   describe("사용자 입력 반영", () => {
     it("이메일 입력값이 input에 반영된다", async () => {
       const user = userEvent.setup();

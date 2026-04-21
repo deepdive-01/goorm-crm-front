@@ -1,5 +1,7 @@
-import { Button, VStack } from "@vapor-ui/core";
+import { Button, Callout, VStack } from "@vapor-ui/core";
 import { TextInput } from "@vapor-ui/core";
+
+import Spinner from "../../common/Spinner/Spinner";
 
 import { useAuthenticationForm } from "../../../hooks/useAuthenticationForm";
 
@@ -29,6 +31,9 @@ export default function AuthenticationForm({
     code,
     isValidEmail,
     isVerified,
+    codeSent,
+    isSendingCode,
+    isVerifying,
     emailError,
     codeError,
     sendCodeError,
@@ -68,11 +73,12 @@ export default function AuthenticationForm({
             size={size}
             variant="fill"
             type="button"
-            disabled={!isValidEmail}
+            disabled={!isValidEmail || isSendingCode}
             onClick={handleSendCode}
-            className="w-full px-4 text-white bg-primary-500 xl:w-fit xl:rounded-l-none text-body4"
+            className="w-full px-4 text-white bg-primary-500 xl:w-fit xl:rounded-l-none text-body4 flex items-center justify-center gap-2"
           >
-            인증번호 받기
+            {isSendingCode && <Spinner size={16} />}
+            {isSendingCode ? "전송 중..." : "인증번호 받기"}
           </Button>
         </div>
         {emailError && (
@@ -80,6 +86,12 @@ export default function AuthenticationForm({
         )}
         {sendCodeError && (
           <p className="text-body5 text-semantic-red">{sendCodeError}</p>
+        )}
+        {/* 인증번호 발송 성공 시 안내 */}
+        {codeSent && !sendCodeError && (
+          <Callout.Root colorPalette="success" className="text-body5">
+            인증번호가 이메일로 전송되었습니다. 이메일을 확인해주세요.
+          </Callout.Root>
         )}
       </div>
 
@@ -123,10 +135,15 @@ export default function AuthenticationForm({
           variant="fill"
           type="button"
           onClick={handleSubmit}
-          className="w-full px-4 text-white bg-primary-500 text-body4"
-          disabled={code.trim().length !== 6 || isVerified}
+          disabled={code.trim().length !== 6 || isVerified || isVerifying}
+          className="w-full px-4 text-white bg-primary-500 text-body4 flex items-center justify-center gap-2"
         >
-          {isVerified ? "인증 완료됨" : submitLabel}
+          {isVerifying && <Spinner size={16} />}
+          {isVerified
+            ? "인증 완료됨"
+            : isVerifying
+              ? "인증 중..."
+              : submitLabel}
         </Button>
       )}
     </VStack>

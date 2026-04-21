@@ -1,7 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
-import { Button, Callout, VStack, Text } from "@vapor-ui/core";
-import { TextInput } from "@vapor-ui/core";
+import {
+  Button,
+  Callout,
+  VStack,
+  Text,
+  HStack,
+  TextInput,
+  Field,
+  Checkbox,
+} from "@vapor-ui/core";
+
+import Spinner from "../../../../components/common/Spinner/Spinner";
 
 import { useLogin } from "../../../../hooks/useLogin";
 import Input from "../../../../components/common/Input/Input";
@@ -11,11 +21,14 @@ export default function Login() {
   const {
     email,
     password,
+    rememberMe,
     emailError,
     loginError,
+    isLoggingIn,
     handleEmailChange,
     handleEmailBlur,
     handlePasswordChange,
+    handleRememberMeChange,
     handleLogin,
   } = useLogin();
 
@@ -82,22 +95,41 @@ export default function Login() {
             onChange={handlePasswordChange}
           />
 
-          <Button
-            type="button"
-            className="w-full justify-end h-fit text-body5 hover:before:!opacity-0"
-            onClick={() => navigate("/resetPassword")}
-          >
-            비밀번호 재설정
-          </Button>
+          <HStack className="items-center justify-between w-full">
+            <Field.Root>
+              <Field.Item>
+                <Checkbox.Root
+                  id="login-auto-login"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) =>
+                    handleRememberMeChange(!!checked)
+                  }
+                />
+                <Field.Label className="text-gray-400 truncate w-fit text-body5">
+                  자동 로그인
+                </Field.Label>
+              </Field.Item>
+            </Field.Root>
+
+            <Button
+              type="button"
+              className="text-body5 text-gray-400 hover:before:!opacity-0"
+              onClick={() => navigate("/resetPassword")}
+            >
+              비밀번호 재설정
+            </Button>
+          </HStack>
 
           {/* VStack의 render를 통해 type = submit으로 폼 제출 */}
           <Button
             size={size}
             variant="fill"
             type="submit"
-            className="w-full text-white bg-primary-500 text-body4"
+            disabled={isLoggingIn}
+            className="flex items-center justify-center w-full gap-2 text-white bg-primary-500 text-body4"
           >
-            로그인
+            {isLoggingIn && <Spinner size={16} />}
+            {isLoggingIn ? "로그인 중..." : "로그인"}
           </Button>
 
           {/* type="button"으로 폼 제출 방지 후 라우팅 */}

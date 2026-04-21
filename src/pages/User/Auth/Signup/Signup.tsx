@@ -1,5 +1,7 @@
 import { Button, Callout, VStack, Text } from "@vapor-ui/core";
 
+import Spinner from "../../../../components/common/Spinner/Spinner";
+
 import { useSignup } from "../../../../hooks/useSignup";
 import AuthenticationForm from "../../../../components/user/AuthenticationForm/AuthenticationForm";
 import Input from "../../../../components/common/Input/Input";
@@ -10,6 +12,7 @@ export default function Signup() {
     phone,
     passwordMismatch,
     signupError,
+    isRegistering,
     setName,
     setPhone,
     setPassword,
@@ -107,10 +110,11 @@ export default function Signup() {
             size={size}
             variant="fill"
             type="submit"
-            className="w-full text-white bg-primary-500 text-body4"
-            disabled={passwordMismatch}
+            className="w-full text-white bg-primary-500 text-body4 flex items-center justify-center gap-2"
+            disabled={passwordMismatch || isRegistering}
           >
-            회원가입
+            {isRegistering && <Spinner size={16} />}
+            {isRegistering ? "가입 중..." : "회원가입"}
           </Button>
         </VStack>
       </VStack>

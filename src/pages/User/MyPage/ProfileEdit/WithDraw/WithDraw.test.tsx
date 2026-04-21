@@ -16,18 +16,13 @@ import Login from "../../../Auth/Login/Login";
 const renderWithDraw = (description?: string) =>
   render(
     <MemoryRouter initialEntries={["/"]}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <UserProvider>
-              <WithDraw description={description} />
-            </UserProvider>
-          }
-        />
-        {/* 탈퇴 성공 후 navigate("/login")으로 이동하는지 확인하는 더미 페이지 */}
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <UserProvider>
+        <Routes>
+          <Route path="/" element={<WithDraw description={description} />} />
+          {/* 탈퇴 성공 후 navigate("/login")으로 이동하는지 확인 */}
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </UserProvider>
     </MemoryRouter>,
   );
 
@@ -123,7 +118,6 @@ describe("WithDraw", () => {
 
   describe("탈퇴 처리", () => {
     it("올바른 비밀번호 입력 후 탈퇴 성공 시 로그인 페이지로 이동한다", async () => {
-      // handleDelete 성공 → navigate("/login") 호출 검증
       renderWithDraw();
       const user = await openModal();
       await waitFor(() =>
@@ -134,7 +128,6 @@ describe("WithDraw", () => {
         "test1234!",
       );
       await user.click(screen.getByRole("button", { name: "회원 탈퇴하기" }));
-      // Login 컴포넌트의 email input이 렌더링되면 /login으로 이동한 것으로 판단
       await waitFor(() => {
         expect(
           screen.getByRole("textbox", { name: "이메일" }),
@@ -243,7 +236,6 @@ describe("WithDraw", () => {
         "test1234!",
       );
       await user.click(screen.getByRole("button", { name: "회원 탈퇴하기" }));
-      // Login 컴포넌트의 email input이 렌더링되면 /login으로 이동한 것으로 판단
       await waitFor(() => {
         expect(
           screen.getByRole("textbox", { name: "이메일" }),
