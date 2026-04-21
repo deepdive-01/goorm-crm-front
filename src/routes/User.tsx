@@ -1,17 +1,18 @@
 import { Route, Routes } from "react-router-dom";
-import ComponentExample from "../components/example/ComponentExample";
+import Main from "../pages/User/Main/Main";
 import Login from "../pages/User/Auth/Login/Login";
 import Signup from "../pages/User/Auth/Signup/Signup";
 import ResetPassword from "../pages/User/Auth/ResetPassword/ResetPassword";
 import ProfileEdit from "../pages/User/MyPage/ProfileEdit/ProfileEdit";
 import MyPage from "../pages/User/MyPage/MyPage";
+import UserNav from "../pages/User/components/UserNav";
 
 const User = () => {
   return (
-    <div>
+    <div className="min-h-screen font-sans bg-white">
+      <UserNav />
       <Routes>
-        {/* / -> 해당 라우트는 ComponentExample을 렌더링 */}
-        <Route path="/" element={<ComponentExample />} />
+        <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/resetPassword" element={<ResetPassword />} />
