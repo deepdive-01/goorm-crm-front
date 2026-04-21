@@ -5,16 +5,19 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import { server } from "../../../../mocks/server";
+import { UserProvider } from "../../../../context/UserContext";
 import Login from "./Login";
 
 const renderLogin = () =>
   render(
     <MemoryRouter initialEntries={["/login"]}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<div>회원가입 페이지</div>} />
-        <Route path="/" element={<div>홈 페이지</div>} />
-      </Routes>
+      <UserProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<div>회원가입 페이지</div>} />
+          <Route path="/" element={<div>홈 페이지</div>} />
+        </Routes>
+      </UserProvider>
     </MemoryRouter>,
   );
 

@@ -1,5 +1,5 @@
 export type UserGrade = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
-export type UserRole = "USER" | "ADMIN";
+export type UserRole = "USER" | "ADMIN" | "ROOT";
 export type UserStatus = "ACTIVE" | "INACTIVE" | "WITHDRAWN";
 
 export interface UserProfile {
