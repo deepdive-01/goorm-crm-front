@@ -1,6 +1,6 @@
-export type UserGrade = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
-export type UserRole = "USER" | "ADMIN";
-export type UserStatus = "ACTIVE" | "INACTIVE" | "WITHDRAWN";
+export type UserGrade = "MEMBER" | "BRONZE" | "SILVER" | "GOLD";
+export type UserRole = "USER" | "ADMIN" | "ROOT";
+export type UserStatus = "ACTIVE" | "BANNED" | "SUSPENDED" | "DELETED";
 
 export interface UserProfile {
   email: string;

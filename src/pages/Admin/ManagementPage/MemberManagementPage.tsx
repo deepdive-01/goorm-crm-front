@@ -10,6 +10,7 @@ import {
   updateMemberGrade,
   type ManagedMember,
 } from "../../../services/memberManagement";
+import { updateAdminRole } from "../../../services/adminManagement";
 
 const TABLE_HEADINGS = ["회원ID", "이름", "이메일", "등급", "상태"] as const;
 
@@ -44,10 +45,11 @@ export default function MemberManagementPage() {
       payload,
     }: {
       user_id: number;
-      payload: { grade?: string; status?: string };
+      payload: { grade?: string; status?: string; role?: string };
     }) => {
       if (payload.status) await updateMemberStatus(user_id, payload.status);
       if (payload.grade) await updateMemberGrade(user_id, payload.grade);
+      if (payload.role) await updateAdminRole(user_id, payload.role);
     },
     onSuccess: () => {
       // 저장 성공 시 회원 목록 캐시 무효화해 최신 상태 자동 재조회
@@ -64,7 +66,7 @@ export default function MemberManagementPage() {
   // 상세 패널에서 저장 버튼 클릭
   async function handleSave(
     user_id: number,
-    payload: { grade?: string; status?: string },
+    payload: { grade?: string; status?: string; role?: string },
   ) {
     await saveMember({ user_id, payload });
   }
@@ -148,6 +150,7 @@ export default function MemberManagementPage() {
           data={selected}
           isOpen={isPanelOpen}
           onClose={() => setIsPanelOpen(false)}
+          currentUserRole={user?.role}
           onSave={handleSave}
         />
       )}

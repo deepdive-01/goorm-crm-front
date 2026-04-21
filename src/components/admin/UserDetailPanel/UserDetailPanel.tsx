@@ -5,6 +5,7 @@ import type { ManagedAdmin } from "../../../services/adminManagement";
 import type { SelectDropdownProps } from "../../../types/userDetailPanel.types";
 import {
   MEMBER_GRADES,
+  MEMBER_ROLES,
   ADMIN_ROLES,
 } from "../../../types/userDetailPanel.types";
 
@@ -107,9 +108,10 @@ interface MemberPanelProps {
   data: ManagedMember;
   isOpen: boolean;
   onClose: () => void;
+  currentUserRole?: string; // ROOT일 때만 권한 변경 드롭다운 표시
   onSave: (
     user_id: number,
-    payload: { grade?: string; status?: string },
+    payload: { grade?: string; status?: string; role?: string },
   ) => void;
 }
 
@@ -133,10 +135,13 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
   const isMember = variant === "member";
   const memberData = isMember ? (data as ManagedMember) : null;
   const adminData = !isMember ? (data as ManagedAdmin) : null;
+  const currentUserRole = isMember ? (props as MemberPanelProps).currentUserRole : undefined;
+  const isRoot = currentUserRole === "ROOT";
 
   // member: grade/status 상태 (address/phone 수정 API 없음)
   const [grade, setGrade] = useState(memberData?.grade ?? "");
   const [status, setStatus] = useState(memberData?.status ?? "ACTIVE");
+  const [memberRole, setMemberRole] = useState(memberData?.role ?? "USER");
 
   // admin: role 상태 (권한 변경에 사용)
   const [role, setRole] = useState(adminData?.role ?? "ADMIN");
@@ -148,16 +153,17 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
   useEffect(() => {
     setGrade(memberData?.grade ?? "");
     setStatus(memberData?.status ?? "ACTIVE");
+    setMemberRole(memberData?.role ?? "USER");
     setRole(adminData?.role ?? "ADMIN");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityKey]);
 
   function handleSave() {
     if (isMember) {
-      // member: grade/status 전달 (address/phone 수정 API 없음)
       (onSave as MemberPanelProps["onSave"])((data as ManagedMember).user_id, {
         grade,
         status,
+        ...(isRoot && { role: memberRole }),
       });
     } else {
       // admin: role만 전달
@@ -266,6 +272,17 @@ export default function UserDetailPanel(props: UserDetailPanelProps) {
                       primary
                     />
                   </Field>
+                  {/* 권한 변경: ROOT 관리자만 표시 — PATCH /api/v1/root/accounts/{user_id}/role */}
+                  {isRoot && (
+                    <Field label="권한">
+                      <SelectDropdown
+                        value={memberRole}
+                        options={MEMBER_ROLES}
+                        onChange={setMemberRole}
+                        primary
+                      />
+                    </Field>
+                  )}
                 </>
               )}
 

@@ -25,6 +25,8 @@ interface UserContextValue {
   deleteAccount: (body: DeleteAccountRequest) => Promise<void>;
   // 캐시를 무효화하고 다시 fetch (로그인 직후 등에 사용)
   refetch: () => Promise<void>;
+  // 로그아웃 시 프로필 및 토큰 초기화
+  clearProfile: () => void;
 }
 
 const UserContext = createContext<UserContextValue | null>(null);
@@ -102,6 +104,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     await fetchProfile();
   }, [fetchProfile]);
 
+  // 로그아웃 시 프로필 및 토큰 초기화
+  const clearProfile = useCallback(() => {
+    setProfile(null);
+    fetchedRef.current = false;
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("role");
+  }, []);
+
   return (
     <UserContext.Provider
       value={{
@@ -111,6 +121,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         updateProfile: handleUpdateProfile,
         deleteAccount: handleDeleteAccount,
         refetch,
+        clearProfile,
       }}
     >
       {children}

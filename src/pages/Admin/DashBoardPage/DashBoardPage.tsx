@@ -70,8 +70,8 @@ function buildCards(
       firstValue: admins.total_pages,
       secondTitle: "등록 관리자",
       secondValue: admins.total_elements,
-      thirdTitle: "-",
-      thirdValue: "-", // Root/일반 관리자 구분 API 없음
+      thirdTitle: "ROOT 관리자",
+      thirdValue: admins.content.filter((a) => a.role === "ROOT").length,
       routeButton: "상세보기 →",
       route: "/admin/admin-management",
     },

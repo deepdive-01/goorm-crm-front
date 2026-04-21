@@ -7,8 +7,8 @@ export type ManagedMember = {
   name: string;
   email: string;
   phone: string;
-  grade: string;  // "GOLD" | "SILVER" | "BRONZE" | "MEMBER"
-  role: string;   // "USER"
+  grade: string; // "GOLD" | "SILVER" | "BRONZE" | "MEMBER"
+  role: string; // "USER"
   status: string; // "ACTIVE" | "BANNED"
   created_at: string;
 };
@@ -23,8 +23,9 @@ export async function fetchManagedMembers(): Promise<ManagedMember[]> {
 export async function updateMemberStatus(
   user_id: number,
   status: string,
+  reason?: string,
 ): Promise<void> {
-  await api.patch(`/api/v1/admin/users/${user_id}/status`, { status });
+  await api.patch(`/api/v1/admin/users/${user_id}/status`, { status, reason });
 }
 
 // 회원 등급 변경 (PATCH /api/v1/root/accounts/{user_id}/grade)

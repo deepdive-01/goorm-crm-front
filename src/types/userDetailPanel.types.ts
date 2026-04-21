@@ -31,3 +31,5 @@ export const PROVINCES = [
 export const MEMBER_GRADES = ["MEMBER", "BRONZE", "SILVER", "GOLD"] as const;
 // 관리자 권한 변경 옵션 — PATCH /api/v1/root/accounts/{user_id}/role
 export const ADMIN_ROLES = ["ADMIN", "ROOT"] as const;
+// 회원 권한 변경 옵션 (ROOT만 사용 가능) — PATCH /api/v1/root/accounts/{user_id}/role
+export const MEMBER_ROLES = ["USER", "ADMIN"] as const;

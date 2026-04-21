@@ -9,6 +9,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SideBarItem from "./SideBarItem";
 import { useSidebar } from "./useSidebar";
 import { useState } from "react";
+import { logout } from "../../../services/auth";
+import { useUserContext } from "../../../context/UserContext";
 
 // 네비게이션 아이템 정의: 경로, 레이블, 아이콘
 const NAV_ITEMS = [
@@ -61,6 +63,7 @@ export default function SideBar({
   const { isOpen, open, close } = useSidebar();
   const location = useLocation();
   const [isProfileOpen, setIsProfileOpen] = useState(false); // 프로필 드롭다운 및 로그아웃 메뉴 상태
+  const { clearProfile } = useUserContext();
 
   // 추후 넣을 네비게이션 훅
   const navigate = useNavigate();
@@ -145,7 +148,10 @@ export default function SideBar({
                   <button
                     className="w-full text-left px-4 py-2.5 text-body4 text-red-400 hover:bg-gray-50 transition-colors"
                     onClick={() => {
-                      // 로그아웃 로직 추가
+                      logout().then(() => {
+                        clearProfile();
+                        navigate("/login");
+                      });
                     }}
                   >
                     로그아웃
