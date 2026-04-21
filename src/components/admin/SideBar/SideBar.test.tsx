@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { MemoryRouter } from "react-router-dom";
+import { UserProvider } from "../../../context/UserContext";
 import SideBar from "./SideBar";
 
 const defaultProps = {
@@ -15,9 +16,11 @@ function renderSideBar(
   initialRoute = "/",
 ) {
   return render(
-    <MemoryRouter initialEntries={[initialRoute]}>
-      <SideBar {...defaultProps} {...props} />
-    </MemoryRouter>,
+    <UserProvider>
+      <MemoryRouter initialEntries={[initialRoute]}>
+        <SideBar {...defaultProps} {...props} />
+      </MemoryRouter>
+    </UserProvider>,
   );
 }
 
@@ -54,14 +57,23 @@ describe("SideBar 렌더링 테스트", () => {
     expect(elements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("네비게이션 메뉴 항목이 모두 렌더링 되어야 한다.", () => {
+  it("네비게이션 메뉴 항목(공통)이 모두 렌더링 되어야 한다.", () => {
     renderSideBar();
     expect(screen.getByText("알림")).toBeInTheDocument();
     expect(screen.getByText("대시보드")).toBeInTheDocument();
     expect(screen.getByText("회원 목록")).toBeInTheDocument();
     expect(screen.getByText("회원 관리")).toBeInTheDocument();
     expect(screen.getByText("등급 관리")).toBeInTheDocument();
+  });
+
+  it("관리자 관리 메뉴는 ROOT 역할일 때만 렌더링 되어야 한다.", () => {
+    renderSideBar({ roleName: "ROOT" });
     expect(screen.getByText("관리자 관리")).toBeInTheDocument();
+  });
+
+  it("관리자 관리 메뉴는 ADMIN 역할일 때 렌더링되지 않아야 한다.", () => {
+    renderSideBar({ roleName: "ADMIN" });
+    expect(screen.queryByText("관리자 관리")).not.toBeInTheDocument();
   });
 
   it("닫기 버튼이 렌더링 되어야 한다.", () => {

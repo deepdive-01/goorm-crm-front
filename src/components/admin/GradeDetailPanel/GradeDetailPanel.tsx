@@ -116,12 +116,6 @@ export default function GradeDetailPanel({
                 </div>
               </Field>
 
-              <Field label="해당 회원 수">
-                <div className="border border-gray-90 rounded-lg px-3 py-2.5 text-body4 text-gray-300 bg-gray-50">
-                  {data.member_count.toLocaleString()}명
-                </div>
-              </Field>
-
               {/* 승급 조건 */}
               <SectionHeading>승급 조건</SectionHeading>
 

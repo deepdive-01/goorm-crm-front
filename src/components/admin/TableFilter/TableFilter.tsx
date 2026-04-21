@@ -12,19 +12,19 @@ interface MemberListHeaderProps {
   onAdd: () => void;
 }
 
-// 필터 옵션 정의
+// 필터 옵션 정의 — value는 실제 API 응답값과 일치시켜야 필터링이 정상 동작
 const FILTER_OPTIONS = {
   status: [
     { value: "all", label: "전체" },
-    { value: "active", label: "활성" },
-    { value: "dormant", label: "휴면" },
+    { value: "ACTIVE", label: "활성" }, // 실제 API: "ACTIVE"
+    { value: "BANNED", label: "차단" }, // 실제 API: "BANNED"
   ],
   grade: [
     { value: "all", label: "전체" },
-    { value: "Gold", label: "Gold" },
-    { value: "Silver", label: "Silver" },
-    { value: "Bronze", label: "Bronze" },
-    { value: "Member", label: "Member" },
+    { value: "GOLD", label: "Gold" },
+    { value: "SILVER", label: "Silver" },
+    { value: "BRONZE", label: "Bronze" },
+    { value: "MEMBER", label: "Member" },
   ],
   attribute: [
     { value: "all", label: "전체" },

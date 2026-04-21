@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import User from "./routes/User";
 import Admin from "./routes/Admin";
+import AdminGuard from "./components/common/AdminGuard/AdminGuard";
 import ScrollToTop from "./components/common/ScrollToTop/ScrollToTop";
 
 function App() {
@@ -12,7 +13,14 @@ function App() {
         <Route path="/*" element={<User />} />
 
         {/* Admin 안에 있는 파일은 /admin의 경로로 시작 */}
-        <Route path="/admin/*" element={<Admin />} />
+        <Route
+          path="/admin/*"
+          element={
+            <AdminGuard>
+              <Admin />
+            </AdminGuard>
+          }
+        />
       </Routes>
     </>
   );

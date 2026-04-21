@@ -9,47 +9,55 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SideBarItem from "./SideBarItem";
 import { useSidebar } from "./useSidebar";
 import { useState } from "react";
+import { logout } from "../../../services/auth";
+import { useUserContext } from "../../../context/UserContext";
 
-// 네비게이션 아이템 정의: 경로, 레이블, 아이콘
+// 네비게이션 아이템 정의: 경로, 레이블, 아이콘, ROOT 전용 여부
 const NAV_ITEMS = [
   {
     path: "/admin/notifications",
     label: "알림",
     icon: "/admin/SideBar/BellOnOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin",
     label: "대시보드",
     icon: "/admin/SideBar/HomeOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/members",
     label: "회원 목록",
     icon: "/admin/SideBar/GroupOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/member-management",
     label: "회원 관리",
     icon: "/admin/SideBar/AssignmentOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/grade-management",
     label: "등급 관리",
     icon: "/admin/SideBar/CertificateOutlineIcon.svg",
+    rootOnly: false,
   },
   {
     path: "/admin/admin-management",
     label: "관리자 관리",
     icon: "/admin/SideBar/BuildOutlineIcon.svg",
+    rootOnly: true,
   },
-] as const;
+];
 
-const SIDEBAR_WIDTH = "w-64"; // 256px
+const SIDEBAR_WIDTH = "w-64";
 
 interface SideBarProps {
   userName: string;
-  roleName: string; // 역할 표시명 (예: "관리자")
-  roleLabel?: string; // 칩 우측 레이블 (생략 시 userName으로 표시)
+  roleName: string;
+  roleLabel?: string;
 }
 
 export default function SideBar({
@@ -61,6 +69,7 @@ export default function SideBar({
   const { isOpen, open, close } = useSidebar();
   const location = useLocation();
   const [isProfileOpen, setIsProfileOpen] = useState(false); // 프로필 드롭다운 및 로그아웃 메뉴 상태
+  const { clearProfile } = useUserContext();
 
   // 추후 넣을 네비게이션 훅
   const navigate = useNavigate();
@@ -110,7 +119,9 @@ export default function SideBar({
           {/* 네비게이션 메뉴 */}
           {/* NAV_ITEMS를 불러와서 사이드바 아이템에 넣음 */}
           <nav className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1">
-            {NAV_ITEMS.map((item, index) => (
+            {NAV_ITEMS.filter(
+              (item) => !item.rootOnly || roleName === "ROOT",
+            ).map((item, index) => (
               <React.Fragment key={item.path}>
                 <SideBarItem
                   icon={item.icon}
@@ -145,7 +156,10 @@ export default function SideBar({
                   <button
                     className="w-full text-left px-4 py-2.5 text-body4 text-red-400 hover:bg-gray-50 transition-colors"
                     onClick={() => {
-                      // 로그아웃 로직 추가
+                      logout().then(() => {
+                        clearProfile();
+                        navigate("/login");
+                      });
                     }}
                   >
                     로그아웃

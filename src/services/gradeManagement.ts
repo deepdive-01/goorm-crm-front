@@ -1,9 +1,10 @@
 import { api } from "./api";
 
+// 실제 API 응답 필드 기준 (GET /api/v1/root/grades)
+// member_count는 API 명세에 없으므로 제외
 export type Grade = {
   grade_id: number;
   name: string;
-  member_count: number;
   min_purchase_amount: number;
   discount_rate: number;
   reward_rate: number;

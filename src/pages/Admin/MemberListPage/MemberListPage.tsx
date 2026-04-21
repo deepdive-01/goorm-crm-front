@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import SideBar from "../../../components/admin/SideBar/SideBar";
 import Table from "../../../components/admin/Table/Table";
 import TableFilter from "../../../components/admin/TableFilter/TableFilter";
 import { fetchAdminMe } from "../../../services/dashboard";
 import { fetchMembers } from "../../../services/members";
-import type { AdminUser } from "../../../types/DashBoardPage.types";
-import type { MemberRow } from "../../../types/table.types";
 
 // 테이블 헤더 정의
 const TABLE_HEADINGS: [string, string, string, string, string, string] = [
@@ -18,24 +17,28 @@ const TABLE_HEADINGS: [string, string, string, string, string, string] = [
 ];
 
 export default function MemberListPage() {
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const [members, setMembers] = useState<MemberRow[]>([]);
+  // 검색어 상태 (이름 기준 필터링)
   const [search, setSearch] = useState("");
+
+  // 필터 상태 — value는 실제 API 응답값과 동일하게 유지 ("ACTIVE", "GOLD" 등)
   const [filters, setFilters] = useState({
     status: "all",
     grade: "all",
     attribute: "all",
   });
 
-  // 관리자 정보와 회원 리스트를 가져옴
-  useEffect(() => {
-    fetchAdminMe()
-      .then(setUser)
-      .catch(() => {});
-    fetchMembers()
-      .then(setMembers)
-      .catch(() => {});
-  }, []);
+  // 사이드바에 표시할 관리자 기본 정보 (GET /api/v1/admin/me)
+  const { data: user } = useQuery({
+    queryKey: ["adminMe"],
+    queryFn: fetchAdminMe,
+  });
+
+  // 회원 목록 (GET /api/v1/admin/users)
+  // data가 undefined일 때 빈 배열을 기본값으로 사용해 이후 filter/map 에러 방지
+  const { data: members = [], isLoading } = useQuery({
+    queryKey: ["memberList"],
+    queryFn: fetchMembers,
+  });
 
   // 필터 변경 핸들러
   function handleFilterChange(
@@ -46,24 +49,22 @@ export default function MemberListPage() {
   }
 
   function handleAdd() {
-    // 버튼 눌렀을때 로직 (추후 예정)
     console.log("회원 추가");
   }
 
-  // 필터 계산
+  // 클라이언트 사이드 필터링
+  // row_2: 이름, row_4: 등급 (GOLD/SILVER/BRONZE/MEMBER), row_5: 상태 (ACTIVE/BANNED)
   const filteredData = members.filter((row) => {
-    const matchesSearch = search === "" || String(row.row_2).includes(search); // 이름을 검색했을 때 검색어가 포함되는 지를 확인
+    // 이름 검색 — 검색어가 포함된 항목만 표시
+    const matchesSearch = search === "" || String(row.row_2).includes(search);
 
-    // 상태 필터링
-    const statusMap: Record<string, string> = {
-      active: "활성",
-      dormant: "휴면",
-    };
-
-    // 등급 필터링
+    // 상태 필터 — "all"이면 전체, 아니면 실제 API 값과 직접 비교
     const matchesStatus =
-      filters.status === "all" || row.row_5 === statusMap[filters.status];
-    const matchesGrade = filters.grade === "all" || row.row_4 === filters.grade;
+      filters.status === "all" || row.row_5 === filters.status;
+
+    // 등급 필터 — "all"이면 전체, 아니면 실제 API 값과 직접 비교
+    const matchesGrade =
+      filters.grade === "all" || row.row_4 === filters.grade;
 
     return matchesSearch && matchesStatus && matchesGrade;
   });
@@ -91,7 +92,13 @@ export default function MemberListPage() {
           onAdd={handleAdd}
         />
         <span className="border border-gray-50 mb-1"></span>
-        <Table variant="member" headings={TABLE_HEADINGS} data={filteredData} />
+
+        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {isLoading ? (
+          <p className="text-body4 text-gray-300">불러오는 중...</p>
+        ) : (
+          <Table variant="member" headings={TABLE_HEADINGS} data={filteredData} />
+        )}
       </main>
     </div>
   );
