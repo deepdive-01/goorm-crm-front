@@ -1,13 +1,13 @@
 import { HStack } from "@vapor-ui/core";
-import InputExample from "./InputExample";
-import TitleExample from "./TitleExample";
+import InputExample from "../Example/InputExample";
+import TitleExample from "../Example/TitleExample";
 import Table from "../admin/Table/Table";
-import DashBoardExample from "./DashBoardExample";
+import DashBoardExample from "../Example/DashBoardExample";
 import SideBar from "../admin/SideBar/SideBar";
-import EditExample from "../example/EditExample";
-import NavExample from "./NavExample";
-import ShippingAddressExample from "./ShippingAddressExample";
-import WithDrawExample from "./WithDrawExample";
+import EditExample from "../Example/EditExample";
+import NavExample from "../Example/NavExample";
+import ShippingAddressExample from "../Example/ShippingAddressExample";
+import WithDrawExample from "../Example/WithDrawExample";
 
 export default function ComponentExample() {
   return (

@@ -4,7 +4,7 @@ import { validateEmail } from "../utils/validateEmail";
 
 type UseAuthenticationFormProps = {
   onSendCode: (email: string) => Promise<void>;
-  onSubmit: (email: string, code: string) => Promise<string>;
+  onSubmit?: (email: string, code: string) => Promise<string>;
 };
 
 export function useAuthenticationForm({
@@ -76,7 +76,7 @@ export function useAuthenticationForm({
   const handleSubmit = async () => {
     setIsVerifying(true);
     try {
-      await onSubmit(email, code);
+      await onSubmit?.(email, code);
       setIsVerified(true);
       setVerificationError(null);
     } catch (error: unknown) {

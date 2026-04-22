@@ -16,6 +16,7 @@ export default function DashBoardExample() {
         thirdValue="0"
         routeButton="Route Button"
         color="orange"
+        route="/"
       />
     </>
   );
