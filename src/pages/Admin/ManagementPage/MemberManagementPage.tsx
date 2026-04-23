@@ -14,6 +14,42 @@ import { updateAdminRole } from "../../../services/adminManagement";
 
 const TABLE_HEADINGS = ["회원ID", "이름", "이메일", "등급", "상태"] as const;
 
+// 스켈레톤 디자인
+function MemberManagementSkeleton() {
+  return (
+    <div className="border border-gray-90 rounded-lg overflow-hidden">
+      <VaporTable.Root $css={{ width: "100%", borderCollapse: "collapse" }}>
+        <VaporTable.Header className="bg-gray-50">
+          <VaporTable.Row>
+            {TABLE_HEADINGS.map((heading) => (
+              <VaporTable.Heading
+                key={heading}
+                className="text-body3 text-gray-300 px-4 py-3 text-left"
+              >
+                {heading}
+              </VaporTable.Heading>
+            ))}
+          </VaporTable.Row>
+        </VaporTable.Header>
+        <VaporTable.Body>
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <VaporTable.Row
+              key={i}
+              className="border-t border-gray-90 animate-pulse"
+            >
+              {TABLE_HEADINGS.map((heading) => (
+                <VaporTable.Cell key={heading} className="px-4 py-3">
+                  <div className="h-4 bg-gray-100 rounded w-3/4" />
+                </VaporTable.Cell>
+              ))}
+            </VaporTable.Row>
+          ))}
+        </VaporTable.Body>
+      </VaporTable.Root>
+    </div>
+  );
+}
+
 export default function MemberManagementPage() {
   // 선택한 회원 (상세 패널에 표시)
   const [selected, setSelected] = useState<ManagedMember | null>(null);
@@ -46,7 +82,6 @@ export default function MemberManagementPage() {
       if (payload.role) await updateAdminRole(user_id, payload.role);
     },
     onSuccess: () => {
-      // 저장 성공 시 회원 목록 캐시 무효화해 최신 상태 자동 재조회
       queryClient.invalidateQueries({ queryKey: ["managedMembers"] });
     },
   });
@@ -83,9 +118,9 @@ export default function MemberManagementPage() {
           </p>
         </div>
 
-        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {/* 로딩 중에는 스켈레톤 표시, 완료 시 테이블 렌더링 */}
         {isLoading ? (
-          <p className="text-body4 text-gray-300">불러오는 중...</p>
+          <MemberManagementSkeleton />
         ) : (
           <div className="border border-gray-90 rounded-lg overflow-hidden">
             <VaporTable.Root
