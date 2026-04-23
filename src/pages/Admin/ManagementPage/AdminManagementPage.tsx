@@ -9,6 +9,7 @@ import {
   updateAdminRole,
   type ManagedAdmin,
 } from "../../../services/adminManagement";
+import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
 
 const TABLE_HEADINGS = ["관리자ID", "이름", "이메일", "권한"] as const;
 
@@ -77,9 +78,9 @@ export default function AdminManagementPage() {
           </p>
         </div>
 
-        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {/* 로딩 중에는 스켈레톤 표시, 완료 시 테이블 렌더링 */}
         {isLoading ? (
-          <p className="text-body4 text-gray-300">불러오는 중...</p>
+          <TableSkeleton headings={TABLE_HEADINGS} />
         ) : (
           <div className="border border-gray-90 rounded-lg overflow-hidden">
             <VaporTable.Root

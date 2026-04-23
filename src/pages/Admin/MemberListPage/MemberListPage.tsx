@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SideBar from "../../../components/admin/SideBar/SideBar";
 import Table from "../../../components/admin/Table/Table";
+import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
 import TableFilter from "../../../components/admin/TableFilter/TableFilter";
 import { fetchAdminMe } from "../../../services/dashboard";
 import { fetchMembers } from "../../../services/members";
@@ -63,8 +64,7 @@ export default function MemberListPage() {
       filters.status === "all" || row.row_5 === filters.status;
 
     // 등급 필터 — "all"이면 전체, 아니면 실제 API 값과 직접 비교
-    const matchesGrade =
-      filters.grade === "all" || row.row_4 === filters.grade;
+    const matchesGrade = filters.grade === "all" || row.row_4 === filters.grade;
 
     return matchesSearch && matchesStatus && matchesGrade;
   });
@@ -93,11 +93,15 @@ export default function MemberListPage() {
         />
         <span className="border border-gray-50 mb-1"></span>
 
-        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {/* 로딩 중에는 스켈레톤 표시, 완료 시 테이블 렌더링 */}
         {isLoading ? (
-          <p className="text-body4 text-gray-300">불러오는 중...</p>
+          <TableSkeleton headings={TABLE_HEADINGS} />
         ) : (
-          <Table variant="member" headings={TABLE_HEADINGS} data={filteredData} />
+          <Table
+            variant="member"
+            headings={TABLE_HEADINGS}
+            data={filteredData}
+          />
         )}
       </main>
     </div>
