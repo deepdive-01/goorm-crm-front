@@ -30,7 +30,7 @@ export default function DashBoard({
 
   return (
     <>
-      <div className="flex flex-col gap-4 border-2 rounded-lg p-[36px] w-[440px]">
+      <div className="flex flex-col gap-4 border-2 rounded-lg p-[36px] w-full">
         <div className="flex gap-[10px] items-center">
           {/* 상단 이미지와 제목 */}
           <img
