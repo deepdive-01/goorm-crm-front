@@ -10,6 +10,7 @@ import {
   type ManagedAdmin,
 } from "../../../services/adminManagement";
 import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
+import { useToast } from "../../../context/ToastContext";
 
 const TABLE_HEADINGS = ["관리자ID", "이름", "이메일", "권한"] as const;
 
@@ -31,6 +32,7 @@ export default function AdminManagementPage() {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
   const { mutateAsync: saveAdmin } = useMutation({
     mutationFn: async ({
@@ -40,12 +42,14 @@ export default function AdminManagementPage() {
       user_id: number;
       payload: { role?: string };
     }) => {
-      // 권한 변경 (PATCH /api/v1/root/accounts/{user_id}/role)
       if (payload.role) await updateAdminRole(user_id, payload.role);
     },
     onSuccess: () => {
-      // 저장 성공 시 관리자 목록 캐시를 무효화해 자동 재조회
       queryClient.invalidateQueries({ queryKey: ["managedAdmins"] });
+      showSuccess("관리자 정보가 저장되었습니다.");
+    },
+    onError: () => {
+      showError("저장에 실패했습니다. 다시 시도해주세요.");
     },
   });
 

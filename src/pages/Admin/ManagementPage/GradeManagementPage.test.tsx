@@ -6,6 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { server } from "../../../mocks/server";
 import { UserProvider } from "../../../context/UserContext";
+import { ToastProvider } from "../../../context/ToastContext";
 import GradeManagementPage from "./GradeManagementPage";
 
 function renderGradeManagementPage() {
@@ -15,9 +16,11 @@ function renderGradeManagementPage() {
   return render(
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <MemoryRouter>
-          <GradeManagementPage />
-        </MemoryRouter>
+        <ToastProvider>
+          <MemoryRouter>
+            <GradeManagementPage />
+          </MemoryRouter>
+        </ToastProvider>
       </UserProvider>
     </QueryClientProvider>,
   );

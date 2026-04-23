@@ -11,6 +11,7 @@ import {
   type UpdateGradePayload,
 } from "../../../services/gradeManagement";
 import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
+import { useToast } from "../../../context/ToastContext";
 
 const TABLE_HEADINGS = [
   "ID",
@@ -37,8 +38,8 @@ export default function GradeManagementPage() {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
-  // 등급 혜택 수정 (PATCH /api/v1/root/grades/{grade_id})
   const { mutateAsync: saveGrade } = useMutation({
     mutationFn: ({
       grade_id,
@@ -48,8 +49,11 @@ export default function GradeManagementPage() {
       payload: UpdateGradePayload;
     }) => updateGrade(grade_id, payload),
     onSuccess: () => {
-      // 저장 성공 시 등급 목록 + 대시보드 캐시 무효화해 최신 상태 유지
       queryClient.invalidateQueries({ queryKey: ["grades"] });
+      showSuccess("등급 정보가 저장되었습니다.");
+    },
+    onError: () => {
+      showError("저장에 실패했습니다. 다시 시도해주세요.");
     },
   });
 

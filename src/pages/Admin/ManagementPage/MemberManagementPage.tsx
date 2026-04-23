@@ -12,6 +12,7 @@ import {
 } from "../../../services/memberManagement";
 import { updateAdminRole } from "../../../services/adminManagement";
 import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
+import { useToast } from "../../../context/ToastContext";
 
 const TABLE_HEADINGS = ["회원ID", "이름", "이메일", "등급", "상태"] as const;
 
@@ -33,6 +34,7 @@ export default function MemberManagementPage() {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
   const { mutateAsync: saveMember } = useMutation({
     mutationFn: async ({
@@ -48,6 +50,10 @@ export default function MemberManagementPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["managedMembers"] });
+      showSuccess("회원 정보가 저장되었습니다.");
+    },
+    onError: () => {
+      showError("저장에 실패했습니다. 다시 시도해주세요.");
     },
   });
 
