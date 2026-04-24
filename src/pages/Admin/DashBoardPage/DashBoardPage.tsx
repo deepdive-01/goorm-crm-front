@@ -17,6 +17,31 @@ import type {
 } from "../../../types/DashBoardPage.types";
 import type { Grade } from "../../../services/gradeManagement";
 
+// 스켈레톤 디자인
+function DashBoardSkeleton() {
+  return (
+    <div
+      data-testid="dashboard-skeleton"
+      className="flex flex-col gap-4 border-2 rounded-lg p-[36px] w-full animate-pulse"
+    >
+      <div className="flex gap-[10px] items-center">
+        <div className="w-[44px] h-[44px] bg-gray-100 rounded-[12px]" />
+        <div className="h-5 w-28 bg-gray-100 rounded" />
+      </div>
+      <div className="h-9 w-24 bg-gray-100 rounded" />
+      <div className="flex flex-col gap-6">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex justify-between w-full">
+            <div className="h-4 w-24 bg-gray-100 rounded" />
+            <div className="h-4 w-8 bg-gray-100 rounded" />
+          </div>
+        ))}
+      </div>
+      <div className="h-4 w-16 bg-gray-100 rounded" />
+    </div>
+  );
+}
+
 function buildCards(
   members: MemberListResponse,
   admins: AdminListResponse,
@@ -151,26 +176,28 @@ export default function DashBoardPage() {
         roleLabel={user?.name ?? "관리자"}
       />
 
-      <main className="flex-1 p-5 flex flex-col items-center">
-        <div className="w-fit flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <span className="text-body5 text-primary-500">대시보드</span>
-            <h1 className="text-h2 font-bold">대시보드</h1>
-            <div className="text-body2 font-medium text-gray-300">
-              관리자 시스템의 주요 지표를 확인해보세요
-            </div>
+      <main className="flex-1 p-8 flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <span className="text-body5 text-primary-500">대시보드</span>
+          <h1 className="text-h2 font-bold">대시보드</h1>
+          <div className="text-body2 font-medium text-gray-300">
+            관리자 시스템의 주요 지표를 확인해보세요
           </div>
-          {/* 모든 데이터 로드 완료 시 카드 그리드, 그 전에는 로딩 텍스트 표시 */}
-          {isLoading ? (
-            <p className="text-body4 text-gray-300">불러오는 중...</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6">
-              {cards.map((card) => (
-                <DashBoard key={card.mainTitle} {...card} />
-              ))}
-            </div>
-          )}
         </div>
+        {/* 모든 데이터 로드 완료 시 카드 그리드, 그 전에는 스켈레톤 카드 표시 */}
+        {isLoading ? (
+          <div className="grid grid-cols-2 gap-6 max-w-[960px] w-full mx-auto">
+            {[0, 1, 2, 3].map((i) => (
+              <DashBoardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-6 max-w-[960px] w-full mx-auto">
+            {cards.map((card) => (
+              <DashBoard key={card.mainTitle} {...card} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

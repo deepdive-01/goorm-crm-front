@@ -3,7 +3,7 @@ import {
   CaretDownIcon,
   ChevronLeftOutlineIcon,
   ChevronRightOutlineIcon,
-  UserIcon,
+  UserOutlineIcon,
 } from "@vapor-ui/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import SideBarItem from "./SideBarItem";
@@ -109,7 +109,7 @@ export default function SideBar({
               </button>
             </div>
             <div className="px-6 pb-6 flex gap-2">
-              <UserIcon size={32} />
+              <UserOutlineIcon size={32} />
               <p className="text-h2 text-gray-400">{userName}</p>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function SideBar({
                 onClick={() => setIsProfileOpen((prev) => !prev)}
               >
                 <div className="w-9 h-9 rounded-full bg-semantic-blueSoft flex items-center justify-center flex-shrink-0">
-                  <UserIcon size={20} className="text-primary-500" />
+                  <UserOutlineIcon size={20} className="text-primary-500" />
                 </div>
                 <CaretDownIcon
                   size={16}

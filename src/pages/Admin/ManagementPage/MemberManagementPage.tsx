@@ -11,6 +11,8 @@ import {
   type ManagedMember,
 } from "../../../services/memberManagement";
 import { updateAdminRole } from "../../../services/adminManagement";
+import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
+import { useToast } from "../../../context/ToastContext";
 
 const TABLE_HEADINGS = ["회원ID", "이름", "이메일", "등급", "상태"] as const;
 
@@ -32,6 +34,7 @@ export default function MemberManagementPage() {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
   const { mutateAsync: saveMember } = useMutation({
     mutationFn: async ({
@@ -46,8 +49,11 @@ export default function MemberManagementPage() {
       if (payload.role) await updateAdminRole(user_id, payload.role);
     },
     onSuccess: () => {
-      // 저장 성공 시 회원 목록 캐시 무효화해 최신 상태 자동 재조회
       queryClient.invalidateQueries({ queryKey: ["managedMembers"] });
+      showSuccess("회원 정보가 저장되었습니다.");
+    },
+    onError: () => {
+      showError("저장에 실패했습니다. 다시 시도해주세요.");
     },
   });
 
@@ -83,9 +89,9 @@ export default function MemberManagementPage() {
           </p>
         </div>
 
-        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {/* 로딩 중에는 스켈레톤 표시, 완료 시 테이블 렌더링 */}
         {isLoading ? (
-          <p className="text-body4 text-gray-300">불러오는 중...</p>
+          <TableSkeleton headings={TABLE_HEADINGS} />
         ) : (
           <div className="border border-gray-90 rounded-lg overflow-hidden">
             <VaporTable.Root

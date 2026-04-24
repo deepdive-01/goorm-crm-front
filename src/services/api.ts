@@ -19,6 +19,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// 401, 403 에러 처리 — 이미 /login이면 redirect 스킵 (무한 루프 방지)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      if (window.location.pathname !== "/login") {
+        localStorage.removeItem("access_token");
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
 // 인증 토큰 없이 요청하는 public API 인스턴스 (로그인, 회원가입, 이메일 인증 등)
 export const publicApi = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,

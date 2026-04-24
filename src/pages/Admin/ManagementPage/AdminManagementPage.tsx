@@ -9,6 +9,8 @@ import {
   updateAdminRole,
   type ManagedAdmin,
 } from "../../../services/adminManagement";
+import TableSkeleton from "../../../components/admin/Table/TableSkeleton";
+import { useToast } from "../../../context/ToastContext";
 
 const TABLE_HEADINGS = ["관리자ID", "이름", "이메일", "권한"] as const;
 
@@ -30,6 +32,7 @@ export default function AdminManagementPage() {
   });
 
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useToast();
 
   const { mutateAsync: saveAdmin } = useMutation({
     mutationFn: async ({
@@ -39,12 +42,14 @@ export default function AdminManagementPage() {
       user_id: number;
       payload: { role?: string };
     }) => {
-      // 권한 변경 (PATCH /api/v1/root/accounts/{user_id}/role)
       if (payload.role) await updateAdminRole(user_id, payload.role);
     },
     onSuccess: () => {
-      // 저장 성공 시 관리자 목록 캐시를 무효화해 자동 재조회
       queryClient.invalidateQueries({ queryKey: ["managedAdmins"] });
+      showSuccess("관리자 정보가 저장되었습니다.");
+    },
+    onError: () => {
+      showError("저장에 실패했습니다. 다시 시도해주세요.");
     },
   });
 
@@ -77,9 +82,9 @@ export default function AdminManagementPage() {
           </p>
         </div>
 
-        {/* 로딩 중에는 텍스트 표시, 완료 시 테이블 렌더링 */}
+        {/* 로딩 중에는 스켈레톤 표시, 완료 시 테이블 렌더링 */}
         {isLoading ? (
-          <p className="text-body4 text-gray-300">불러오는 중...</p>
+          <TableSkeleton headings={TABLE_HEADINGS} />
         ) : (
           <div className="border border-gray-90 rounded-lg overflow-hidden">
             <VaporTable.Root
