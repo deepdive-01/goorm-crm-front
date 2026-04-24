@@ -30,9 +30,10 @@ describe("DashBoardPage 렌더링 테스트", () => {
     ).toBeInTheDocument();
   });
 
-  it("데이터 로딩 중에는 '불러오는 중...'이 표시된다.", () => {
+  it("데이터 로딩 중에는 스켈레톤 카드가 4개 표시된다.", () => {
     renderDashBoardPage();
-    expect(screen.getByText("불러오는 중...")).toBeInTheDocument();
+    const skeletons = screen.getAllByTestId("dashboard-skeleton");
+    expect(skeletons).toHaveLength(4);
   });
 
   it("API 응답 후 대시보드 카드 4개가 렌더링된다.", async () => {
@@ -45,10 +46,10 @@ describe("DashBoardPage 렌더링 테스트", () => {
     });
   });
 
-  it("API 응답 후 '불러오는 중...'이 사라진다.", async () => {
+  it("API 응답 후 스켈레톤 카드가 사라진다.", async () => {
     renderDashBoardPage();
     await waitFor(() => {
-      expect(screen.queryByText("불러오는 중...")).not.toBeInTheDocument();
+      expect(screen.queryAllByTestId("dashboard-skeleton")).toHaveLength(0);
     });
   });
 });

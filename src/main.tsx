@@ -5,6 +5,7 @@ import "@fontsource/pretendard";
 import "./index.css";
 import App from "./App.tsx";
 import { UserProvider } from "./context/UserContext";
+import { ToastProvider } from "./context/ToastContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -22,7 +23,9 @@ enableMocking().then(() => {
       <BrowserRouter>
         <ThemeProvider>
           <UserProvider>
-            <App />
+            <ToastProvider>
+              <App />
+            </ToastProvider>
           </UserProvider>
         </ThemeProvider>
       </BrowserRouter>
