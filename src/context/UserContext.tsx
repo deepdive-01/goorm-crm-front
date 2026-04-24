@@ -52,20 +52,33 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await getProfile();
       setProfile(data);
+      localStorage.setItem("role", data.role);
       fetchedRef.current = true;
     } catch (err) {
-      const e = err as { response?: { data?: { message?: string } } };
-      setError(
-        e.response?.data?.message ?? "사용자 정보를 불러오지 못했습니다.",
-      );
+      const e = err as {
+        response?: { status?: number; data?: { message?: string } };
+      };
+      const status = e.response?.status;
+      if (status === 401 || status === 403) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("role");
+      } else {
+        setError(
+          e.response?.data?.message ?? "사용자 정보를 불러오지 못했습니다.",
+        );
+      }
     } finally {
       setIsLoading(false);
       fetchingRef.current = false;
     }
   }, []);
 
-  // 마운트 시 한 번만 조회 (이미 fetch된 경우 스킵)
+  // 마운트 시 한 번만 조회 (토큰 없으면 스킵, 이미 fetch된 경우도 스킵)
   useEffect(() => {
+    if (!localStorage.getItem("access_token")) {
+      setIsLoading(false);
+      return;
+    }
     if (!fetchedRef.current) {
       fetchProfile();
     }
@@ -94,6 +107,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     async (body: DeleteAccountRequest) => {
       await deleteAccount(body);
       setProfile(null);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("role");
       fetchedRef.current = false;
     },
     [],
@@ -107,6 +122,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const clearProfile = useCallback(() => {
     setProfile(null);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("role");
     fetchedRef.current = false;
   }, []);
 

@@ -11,6 +11,13 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe("UserContext", () => {
   describe("초기 데이터 조회", () => {
+    it("토큰이 없으면 fetchProfile을 호출하지 않고 isLoading이 false가 된다", async () => {
+      localStorage.removeItem("access_token");
+      const { result } = renderHook(() => useUserContext(), { wrapper });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.profile).toBeNull();
+    });
+
     it("마운트 시 isLoading이 true로 시작한다", () => {
       const { result } = renderHook(() => useUserContext(), { wrapper });
       expect(result.current.isLoading).toBe(true);
@@ -36,11 +43,8 @@ describe("UserContext", () => {
       server.use(
         http.get("*/api/v1/users/me", () => {
           return HttpResponse.json(
-            {
-              code: "TOKEN_EXPIRED",
-              message: "세션이 만료되었습니다. 다시 로그인해주세요.",
-            },
-            { status: 401 },
+            { message: "서버 오류가 발생했습니다." },
+            { status: 500 },
           );
         }),
       );
@@ -49,6 +53,22 @@ describe("UserContext", () => {
         expect(result.current.error).not.toBeNull();
       });
       expect(result.current.profile).toBeNull();
+    });
+
+    it("401/403 응답 시 토큰을 제거하고 profile은 null로 유지된다", async () => {
+      server.use(
+        http.get("*/api/v1/users/me", () => {
+          return HttpResponse.json(
+            { code: "TOKEN_EXPIRED", message: "세션이 만료되었습니다." },
+            { status: 401 },
+          );
+        }),
+      );
+      const { result } = renderHook(() => useUserContext(), { wrapper });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.profile).toBeNull();
+      expect(result.current.error).toBeNull();
+      expect(localStorage.getItem("access_token")).toBeNull();
     });
   });
 
